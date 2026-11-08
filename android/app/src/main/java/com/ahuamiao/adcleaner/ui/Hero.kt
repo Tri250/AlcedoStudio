@@ -9,6 +9,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -57,6 +58,14 @@ class MorphState(initial: RoundedPolygon) {
         progress.animateTo(1f, spec)
     }
 
+    /** 系统关了动画时直接换形状，不做变形过渡。 */
+    suspend fun snap(polygon: RoundedPolygon) {
+        if (polygon === target) return
+        target = polygon
+        morph = Morph(polygon, polygon)
+        progress.snapTo(1f)
+    }
+
     /** 只在绘制阶段读进度：动画期间只重画，不重组。 */
     fun fill(path: Path) = morph.toPath(progress.value, path)
 }
@@ -99,13 +108,16 @@ fun Hero(
 ) {
     val hero = LocalHero.current
     val motion = MaterialTheme.motionScheme
+    val reduce = LocalReduceMotion.current
     val morphSpec = motion.slowSpatialSpec<Float>()
-    LaunchedEffect(polygon) { hero.morph.morphTo(polygon, morphSpec) }
+    LaunchedEffect(polygon, reduce) {
+        if (reduce) hero.morph.snap(polygon) else hero.morph.morphTo(polygon, morphSpec)
+    }
 
     val fill by animateColorAsState(color, motion.slowEffectsSpec())
     val press by animateFloatAsState(if (pressed) 0.92f else 1f, motion.fastSpatialSpec())
 
-    if (spin && !LocalReduceMotion.current) {
+    if (spin && !reduce) {
         LaunchedEffect(Unit) {
             var last = withFrameMillis { it }
             while (true) {
@@ -118,7 +130,11 @@ fun Hero(
 
     val shared = LocalSharedScope.current
     val page = LocalPageScope.current
-    val bounds = motion.defaultSpatialSpec<androidx.compose.ui.geometry.Rect>()
+    val bounds = if (reduce) {
+        snap<androidx.compose.ui.geometry.Rect>()
+    } else {
+        motion.defaultSpatialSpec<androidx.compose.ui.geometry.Rect>()
+    }
     val travel = if (shared != null && page != null) with(shared) {
         Modifier.sharedElement(
             sharedContentState = rememberSharedContentState("hero"),
@@ -153,9 +169,12 @@ fun ShapeBadge(
     content: @Composable BoxScope.() -> Unit,
 ) {
     val motion = MaterialTheme.motionScheme
+    val reduce = LocalReduceMotion.current
     val state = remember { MorphState(polygon) }
     val spec = motion.defaultSpatialSpec<Float>()
-    LaunchedEffect(polygon) { state.morphTo(polygon, spec) }
+    LaunchedEffect(polygon, reduce) {
+        if (reduce) state.snap(polygon) else state.morphTo(polygon, spec)
+    }
     val fill by animateColorAsState(color, motion.defaultEffectsSpec())
     Box(modifier.morphFill(state, { fill }), contentAlignment = Alignment.Center, content = content)
 }

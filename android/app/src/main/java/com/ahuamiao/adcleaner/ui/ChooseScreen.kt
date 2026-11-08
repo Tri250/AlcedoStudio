@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -68,8 +68,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ahuamiao.adcleaner.R
 
@@ -83,24 +85,40 @@ fun ChooseScreen(model: AppModel) {
         containerColor = colors.surfaceContainer,
         topBar = {
             CenteredBar {
-            MediumFlexibleTopAppBar(
-                title = { Text("手动选择去广告", style = MaterialTheme.typography.headlineSmallEmphasized) },
-                subtitle = selection?.let { s -> { Text("${s.detection.name} · 逐项确认") } },
-                navigationIcon = {
-                    IconButton(onClick = model::goHomeNow, shapes = IconButtonDefaults.shapes()) {
-                        Glyph(R.drawable.ic_arrow_back, label = "返回")
-                    }
-                },
-                colors = pageBarColors(),
-                scrollBehavior = bar,
-            )
+                MediumFlexibleTopAppBar(
+                    title = {
+                        Text(
+                            "手动选择去广告",
+                            style = MaterialTheme.typography.headlineSmallEmphasized,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                    subtitle = selection?.let { s ->
+                        {
+                            Text(
+                                "${s.detection.name} · 逐项确认",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = model::goHomeNow, shapes = IconButtonDefaults.shapes()) {
+                            Glyph(R.drawable.ic_arrow_back, label = "返回")
+                        }
+                    },
+                    colors = pageBarColors(),
+                    scrollBehavior = bar,
+                )
             }
         },
     ) { inner ->
+        // 四边都按 Scaffold 的内边距让位：横屏刘海、侧边导航栏都不会压住列表和底栏
         Box(
             Modifier
                 .fillMaxSize()
-                .padding(top = inner.calculateTopPadding()),
+                .padding(inner),
             contentAlignment = Alignment.TopCenter,
         ) {
             if (selection == null) {
@@ -129,9 +147,12 @@ private fun StartToolbar(model: AppModel, selection: Selection, modifier: Modifi
             fabContentColor = colors.onSurface,
         ),
         modifier = modifier
-            .navigationBarsPadding()
+            // 平板和折叠屏展开时和列表同宽，不要横贯整块屏幕
+            .widthIn(max = PageWidth)
+            .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
-            .height(FloatingToolbarDefaults.ContainerSize),
+            // 最小 64dp，系统字号很大时让工具栏跟按钮一起长高，不裁字
+            .heightIn(min = FloatingToolbarDefaults.ContainerSize),
     ) {
         Row(
             modifier = Modifier
@@ -139,16 +160,22 @@ private fun StartToolbar(model: AppModel, selection: Selection, modifier: Modifi
                 .padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            StatusPill("已选 ${selection.count} 项", color = colors.primary, contentColor = colors.onPrimaryContainer)
-        }
-        Spacer(Modifier.width(12.dp))
-        Button(
-            onClick = model::startChosen,
-            shapes = ButtonDefaults.shapesFor(height),
-            enabled = !blocked,
-            modifier = Modifier.padding(end = 8.dp),
-        ) {
-            ButtonLabel("开始", height, R.drawable.ic_play_arrow)
+            // 胶囊占剩余宽度，字号放大时省略而不是把「开始」挤出屏幕
+            Box(Modifier.weight(1f)) {
+                StatusPill("已选 ${selection.count} 项", color = colors.primary, contentColor = colors.onPrimaryContainer)
+            }
+            Spacer(Modifier.width(12.dp))
+            Button(
+                onClick = model::startChosen,
+                shapes = ButtonDefaults.shapesFor(height),
+                contentPadding = ButtonDefaults.contentPaddingFor(height),
+                enabled = !blocked,
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .heightIn(min = height),
+            ) {
+                ButtonLabel("开始", height, R.drawable.ic_play_arrow)
+            }
         }
     }
 }
@@ -189,7 +216,7 @@ private fun ChooseList(model: AppModel, selection: Selection) {
         if (detection.warnings.isNotEmpty()) {
             item {
                 Surface(
-                    shape = MaterialTheme.shapes.extraLarge,
+                    shape = MaterialTheme.shapes.large,
                     // 不是所有提示都拦着开始（展开的折叠屏照常能关营销通知），拦不住的用中性色，别当成错误
                     color = if (detection.blocked) colors.errorContainer else colors.secondaryContainer,
                     contentColor = if (detection.blocked) colors.onErrorContainer else colors.onSecondaryContainer,
@@ -245,7 +272,7 @@ private fun ChooseList(model: AppModel, selection: Selection) {
                 }
             }
             is ScanState.Failed -> item {
-                Surface(shape = MaterialTheme.shapes.extraLarge, color = colors.errorContainer, contentColor = colors.onErrorContainer) {
+                Surface(shape = MaterialTheme.shapes.large, color = colors.errorContainer, contentColor = colors.onErrorContainer) {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("通知扫描未完成", style = MaterialTheme.typography.titleMediumEmphasized)
                         Text(scan.message, style = MaterialTheme.typography.bodyMedium)
@@ -264,7 +291,7 @@ private fun ChooseList(model: AppModel, selection: Selection) {
                     item {
                         Text(
                             scan.notes.joinToString("\n"),
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = colors.onSurfaceVariant,
                             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                         )
@@ -344,6 +371,7 @@ private fun ChooseList(model: AppModel, selection: Selection) {
             SegmentedListItem(
                 onClick = model::checkUi,
                 shapes = ListItemDefaults.segmentedShapes(0, 1),
+                colors = cardRowColors(),
                 leadingContent = {
                     IconTile(
                         R.drawable.ic_smartphone,
@@ -360,6 +388,7 @@ private fun ChooseList(model: AppModel, selection: Selection) {
 private fun PlainRow(text: String, @DrawableRes icon: Int) {
     SegmentedListItem(
         shapes = ListItemDefaults.segmentedShapes(0, 1),
+        colors = cardRowColors(),
         leadingContent = {
             IconTile(
                 icon,
@@ -368,7 +397,11 @@ private fun PlainRow(text: String, @DrawableRes icon: Int) {
             )
         },
     ) {
-        Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -394,7 +427,7 @@ private fun RecipeBlock(model: AppModel, selection: Selection) {
                 trailingContent = { Switch(selection.recipe, onCheckedChange = null) },
                 supportingContent = { Text(detection.recipeNote) },
             ) { Text(detection.recipeLabel) }
-            SegmentedListItem(shapes = ListItemDefaults.segmentedShapes(1, rows)) {
+            SegmentedListItem(shapes = ListItemDefaults.segmentedShapes(1, rows), colors = cardRowColors()) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     detection.steps.forEach { step ->
                         val on = selection.steps[step] == true
@@ -421,6 +454,7 @@ private fun ManualRow(model: AppModel, detection: Detection, index: Int, count: 
     SegmentedListItem(
         onClick = { model.openUrl(detection.manualUrl) },
         shapes = ListItemDefaults.segmentedShapes(index, count),
+        colors = cardRowColors(),
         leadingContent = {
             IconTile(
                 R.drawable.ic_menu_book,
@@ -443,7 +477,14 @@ private fun ChannelGroupRow(group: ChannelGroup, index: Int, count: Int) {
     val colors = MaterialTheme.colorScheme
     val shapes = ListItemDefaults.segmentedShapes(index, count)
     val clear = ListItemDefaults.colors(containerColor = Color.Transparent)
-    val clearToggle = ListItemDefaults.colors(containerColor = Color.Transparent, selectedContainerColor = Color.Transparent)
+    // 勾选只靠 Checkbox 表达，别把整行文字染成第二色，和上面的分组标题打架
+    val clearToggle = ListItemDefaults.colors(
+        containerColor = Color.Transparent,
+        selectedContainerColor = Color.Transparent,
+        selectedContentColor = colors.onSurface,
+        selectedLeadingContentColor = colors.onSurfaceVariant,
+        selectedTrailingContentColor = colors.onSurfaceVariant,
+    )
     Surface(shape = shapes.shape, color = colors.surface) {
         Column {
             ListItem(
@@ -475,7 +516,14 @@ private fun ChannelGroupRow(group: ChannelGroup, index: Int, count: Int) {
                         }
                     }
                 },
-            ) { Text(group.label, style = MaterialTheme.typography.titleSmallEmphasized, maxLines = 2) }
+            ) {
+                Text(
+                    group.label,
+                    style = MaterialTheme.typography.titleSmallEmphasized,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             AnimatedVisibility(
                 visible = expanded,
                 enter = expandVertically(motion.defaultSpatialSpec()) + fadeIn(motion.defaultEffectsSpec()),
@@ -511,7 +559,9 @@ private fun AppAvatar(label: String) {
         modifier = Modifier
             .size(40.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(tone.first),
+            .background(tone.first)
+            // 首字只是颜色标记，读屏别念出一个孤零零的字
+            .clearAndSetSemantics {},
         contentAlignment = Alignment.Center,
     ) {
         Text(

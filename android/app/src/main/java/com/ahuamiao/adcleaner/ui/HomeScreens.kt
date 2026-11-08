@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -64,9 +63,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
@@ -82,18 +85,24 @@ fun BootScreen() {
 @Composable
 fun FailedScreen(reason: String) {
     Page {
-        Spacer(Modifier.weight(1f))
-        Text("启动失败", style = MaterialTheme.typography.headlineMediumEmphasized)
-        Spacer(Modifier.height(12.dp))
-        SelectionContainer {
-            Text(
-                reason,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-            )
+        // 报错可能很长：限在剩余高度里滚动，横屏也不会顶出屏幕
+        Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                Text("启动失败", style = MaterialTheme.typography.headlineMediumEmphasized)
+                Spacer(Modifier.height(12.dp))
+                SelectionContainer {
+                    Text(
+                        reason,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
-        Spacer(Modifier.weight(1f))
     }
 }
 
@@ -118,6 +127,7 @@ private fun BrandMark(size: Dp, onTap: () -> Unit) {
             }
             .clip(shape)
             .background(Brush.linearGradient(listOf(colors.primary, colors.secondary)))
+            .semantics { contentDescription = "关于清静" }
             .clickable(interactionSource = press, indication = null, onClick = onTap),
         contentAlignment = Alignment.Center,
     ) {
@@ -142,20 +152,20 @@ fun HomeScreen(model: AppModel) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                    .padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(
                     painterResource(R.drawable.ic_aigoodbro_avatar),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(34.dp)
-                        .clip(RoundedCornerShape(10.dp)),
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(12.dp)),
                 )
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 10.dp),
+                        .padding(start = 12.dp),
                 ) {
                     Text("清静", style = MaterialTheme.typography.titleMediumEmphasized)
                     Text(
@@ -182,7 +192,8 @@ fun HomeScreen(model: AppModel) {
             }
         },
         middle = { maxWidth, maxHeight ->
-            val size = min(maxWidth * 0.50f, maxHeight - 168.dp).coerceAtLeast(112.dp)
+            // 扣掉下面标题和状态胶囊，别让徽标在矮屏上把文字顶出屏幕
+            val size = min(maxWidth * 0.50f, (maxHeight - 150.dp).coerceAtLeast(88.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 BrandMark(
                     size = size,
@@ -192,12 +203,16 @@ fun HomeScreen(model: AppModel) {
                     },
                 )
                 Spacer(Modifier.height(24.dp))
-                Text(
-                    device?.title.orEmpty(),
-                    style = MaterialTheme.typography.headlineSmallEmphasized,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                )
+                val title = device?.title.orEmpty()
+                if (title.isNotEmpty()) {
+                    Text(
+                        title,
+                        style = MaterialTheme.typography.headlineSmallEmphasized,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 Spacer(Modifier.height(10.dp))
                 StatusPill("已就绪", color = colors.secondary, contentColor = colors.onSecondaryContainer)
             }
@@ -213,7 +228,7 @@ fun HomeScreen(model: AppModel) {
                 height = actionHeight,
                 icon = R.drawable.ic_bolt,
             )
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(12.dp))
             SizedButton(
                 text = "手动选择去广告",
                 onClick = {
@@ -225,16 +240,16 @@ fun HomeScreen(model: AppModel) {
                 icon = R.drawable.ic_shield,
                 tonal = true,
             )
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(12.dp))
             SizedButton(
-                text = "还原",
+                text = "还原改动",
                 onClick = model::openRestore,
                 modifier = Modifier.fillMaxWidth(),
                 height = actionHeight,
                 icon = R.drawable.ic_history,
                 outlined = true,
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
         },
     )
 }
@@ -265,8 +280,13 @@ private fun runStep(step: SetupStep, host: HostActions) = when (step.key) {
 private fun SetupSteps(model: AppModel, at: Int, host: HostActions) {
     val steps = model.setup.steps
     val list = rememberLazyListState()
+    val reduce = LocalReduceMotion.current
     // 从系统设置回到 App 时定位到当前步（#646）；换一步时也滚过去。高亮由 SetupRow 按 i == at 画。
-    LaunchedEffect(at, model.visible) { if (model.visible) list.animateScrollToItem(at) }
+    LaunchedEffect(at, model.visible) {
+        if (model.visible) {
+            if (reduce) list.scrollToItem(at) else list.animateScrollToItem(at)
+        }
+    }
     val bar = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val colors = MaterialTheme.colorScheme
     Scaffold(
@@ -275,8 +295,15 @@ private fun SetupSteps(model: AppModel, at: Int, host: HostActions) {
         topBar = {
             CenteredBar {
                 LargeFlexibleTopAppBar(
-                    title = { Text("先做 3 个设置", style = MaterialTheme.typography.displaySmallEmphasized) },
-                    subtitle = { Text("只做一次，约 1 分钟") },
+                    title = {
+                        Text(
+                            "先做 3 个设置",
+                            style = MaterialTheme.typography.displaySmallEmphasized,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                    subtitle = { Text("只做一次，约 1 分钟", maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     colors = pageBarColors(),
                     scrollBehavior = bar,
                 )
@@ -323,6 +350,7 @@ private fun SetupSteps(model: AppModel, at: Int, host: HostActions) {
 @Composable
 private fun SetupRow(index: Int, count: Int, step: SetupStep, done: Boolean, current: Boolean) {
     val colors = MaterialTheme.colorScheme
+    val reduce = LocalReduceMotion.current
     val badgeColor = when {
         done -> colors.secondary
         current -> colors.primary
@@ -344,7 +372,7 @@ private fun SetupRow(index: Int, count: Int, step: SetupStep, done: Boolean, cur
                 leadingContentColor = colors.onSecondaryContainer,
             )
         } else {
-            ListItemDefaults.segmentedColors()
+            cardRowColors()
         },
         verticalAlignment = Alignment.Top,
         leadingContent = {
@@ -355,12 +383,16 @@ private fun SetupRow(index: Int, count: Int, step: SetupStep, done: Boolean, cur
                     AnimatedContent(
                         done,
                         transitionSpec = {
-                            (scaleIn(motion.fastEffectsSpec(), initialScale = 0.6f) + fadeIn(motion.fastEffectsSpec())) togetherWith
-                                fadeOut(motion.fastEffectsSpec())
+                            if (reduce) {
+                                fadeIn(motion.fastEffectsSpec()) togetherWith fadeOut(motion.fastEffectsSpec())
+                            } else {
+                                (scaleIn(motion.fastEffectsSpec(), initialScale = 0.6f) + fadeIn(motion.fastEffectsSpec())) togetherWith
+                                    fadeOut(motion.fastEffectsSpec())
+                            }
                         },
                         label = "setup-badge",
                     ) { checked ->
-                        if (checked) Glyph(R.drawable.ic_check, Modifier.size(20.dp))
+                        if (checked) Glyph(R.drawable.ic_check, Modifier.size(20.dp), label = "已完成")
                         else Text("${index + 1}", style = MaterialTheme.typography.titleMediumEmphasized)
                     }
                 }
@@ -374,7 +406,8 @@ private fun SetupRow(index: Int, count: Int, step: SetupStep, done: Boolean, cur
                             Text(
                                 "${k + 1}",
                                 style = MaterialTheme.typography.labelLargeEmphasized,
-                                modifier = Modifier.width(18.dp),
+                                // 最小宽度而不是固定宽度：系统字号调大时序号还能完整显示
+                                modifier = Modifier.widthIn(min = 18.dp),
                             )
                             Text(line, style = MaterialTheme.typography.bodyMedium)
                         }
@@ -411,25 +444,29 @@ private fun StatusScreen(state: String, host: HostActions) {
     val copy = statusCopy(state)
     val colors = MaterialTheme.colorScheme
     Page {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Hero(MaterialShapes.Circle, colors.primaryContainer, Modifier.size(160.dp)) {
-                Glyph(R.drawable.ic_shield, Modifier.size(64.dp))
+        // 内容放得下时居中，横屏或大字号放不下时整块可滚动，不会顶到下面的按钮
+        Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                // 横屏和矮屏收小主视觉，给说明文字和按钮留位置
+                val short = LocalConfiguration.current.screenHeightDp < 600
+                Hero(MaterialShapes.Circle, colors.primaryContainer, Modifier.size(if (short) 112.dp else 160.dp)) {
+                    Glyph(R.drawable.ic_shield, Modifier.size(if (short) 48.dp else 64.dp))
+                }
+                Spacer(Modifier.height(32.dp))
+                Text(copy.title, style = MaterialTheme.typography.headlineMediumEmphasized, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    copy.text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colors.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
             }
-            Spacer(Modifier.height(32.dp))
-            Text(copy.title, style = MaterialTheme.typography.headlineMediumEmphasized, textAlign = TextAlign.Center)
-            Spacer(Modifier.height(12.dp))
-            Text(
-                copy.text,
-                style = MaterialTheme.typography.bodyLarge,
-                color = colors.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
         }
         SizedButton(
             text = copy.action,

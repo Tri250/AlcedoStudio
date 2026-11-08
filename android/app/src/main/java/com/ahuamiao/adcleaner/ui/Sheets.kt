@@ -100,7 +100,7 @@ private fun SheetTitle(text: String) {
     Text(
         text,
         style = MaterialTheme.typography.headlineSmallEmphasized,
-        modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
+        modifier = Modifier.padding(bottom = 16.dp),
     )
 }
 
@@ -118,7 +118,10 @@ private fun MoreSheet(model: AppModel) {
                 SegmentedListItem(
                     onClick = { model.openUrl(newer.url) },
                     shapes = ListItemDefaults.segmentedShapes(i++, rows),
-                    colors = ListItemDefaults.segmentedColors(containerColor = colors.primaryContainer),
+                    colors = ListItemDefaults.segmentedColors(
+                        containerColor = colors.primaryContainer,
+                        contentColor = colors.onPrimaryContainer,
+                    ),
                     leadingContent = {
                         IconTile(
                             R.drawable.ic_system_update,
@@ -131,27 +134,32 @@ private fun MoreSheet(model: AppModel) {
             SegmentedListItem(
                 onClick = model::openRestore,
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
+                colors = cardRowColors(),
                 leadingContent = { IconTile(R.drawable.ic_history, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
             ) { Text("还原改动") }
             SegmentedListItem(
                 onClick = { model.openFeedback() },
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
+                colors = cardRowColors(),
                 leadingContent = { IconTile(R.drawable.ic_chat_bubble, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
             ) { Text("反馈问题") }
             SegmentedListItem(
                 onClick = { model.sheet = Sheet.Support },
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
+                colors = cardRowColors(),
                 leadingContent = { IconTile(R.drawable.ic_headset, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
             ) { Text("企业微信支持") }
             SegmentedListItem(
                 onClick = { model.openUrl(GUIDE_URL) },
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
+                colors = cardRowColors(),
                 leadingContent = { IconTile(R.drawable.ic_menu_book, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
                 trailingContent = { Glyph(R.drawable.ic_open_in_new) },
             ) { Text("使用说明") }
             SegmentedListItem(
                 onClick = { model.sheet = Sheet.About },
                 shapes = ListItemDefaults.segmentedShapes(i, rows),
+                colors = cardRowColors(),
                 leadingContent = { IconTile(R.drawable.ic_shield, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
             ) { Text("关于清静") }
         }
@@ -190,29 +198,51 @@ private fun AboutSheet(model: AppModel) {
             "本软件基于 android-ad-cleaner 开发。原作者：肉呆大魔王（rddmwmddr）。AiGoodBro 维护此衍生版本的品牌与适配。",
             style = MaterialTheme.typography.bodySmall,
         )
-        TextButton(onClick = { model.openUrl("https://github.com/rddmwmddr/android-ad-cleaner") }) {
+        TextButton(
+            onClick = { model.openUrl("https://github.com/rddmwmddr/android-ad-cleaner") },
+            shapes = ButtonDefaults.shapes(),
+        ) {
             Text("查看上游项目")
         }
-        TextButton(onClick = { model.openUrl("https://github.com/BLACKIELF/qingjing-aigoodbro") }) {
+        TextButton(
+            onClick = { model.openUrl("https://github.com/BLACKIELF/qingjing-aigoodbro") },
+            shapes = ButtonDefaults.shapes(),
+        ) {
             Text("查看本项目源码")
         }
-        TextButton(onClick = { model.openUrl("https://aigoodbro.com") }) {
-            Text("🎁 点击有惊喜 · aigoodbro.com")
+        TextButton(
+            onClick = { model.openUrl("https://aigoodbro.com") },
+            shapes = ButtonDefaults.shapes(),
+        ) {
+            Text("访问官网 · aigoodbro.com")
         }
         Text("MIT 许可证", style = MaterialTheme.typography.titleMediumEmphasized)
         SelectionContainer {
             Text(
                 license,
                 style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                modifier = Modifier.padding(top = 8.dp),
+                // 许可证很长，限高单独滚动，不然这一页能拉出好几屏
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+                    .heightIn(max = 240.dp)
+                    .verticalScroll(rememberScrollState()),
             )
         }
         Spacer(Modifier.height(12.dp))
         Text("AiGoodBro 界面 MIT 许可证", style = MaterialTheme.typography.titleMediumEmphasized)
         SelectionContainer {
-            Text(uiLicense, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace), modifier = Modifier.padding(top = 8.dp))
+            Text(
+                uiLicense,
+                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+                    .heightIn(max = 240.dp)
+                    .verticalScroll(rememberScrollState()),
+            )
         }
-        TextButton(onClick = { model.sheet = Sheet.Support }) { Text("企业微信支持") }
+        TextButton(onClick = { model.sheet = Sheet.Support }, shapes = ButtonDefaults.shapes()) { Text("企业微信支持") }
         Spacer(Modifier.height(12.dp))
         Text(
             "界面使用 AndroidX / Material；无线调试组件 libadb-android 按 Apache-2.0 许可使用，Shizuku API 与相关依赖保留各自开源许可。",
@@ -261,7 +291,7 @@ private fun RestoreSheet(model: AppModel) {
             "只恢复清静做过的改动，不影响系统更新和正常功能。",
             style = MaterialTheme.typography.bodyMedium,
             color = colors.onSurfaceVariant,
-            modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
+            modifier = Modifier.padding(bottom = 12.dp),
         )
         Segments {
             RestoreItems.forEachIndexed { i, item ->
@@ -274,6 +304,7 @@ private fun RestoreSheet(model: AppModel) {
                     onClick = { model.restore(item.key) },
                     enabled = !model.restoring,
                     shapes = ListItemDefaults.segmentedShapes(i, RestoreItems.size),
+                    colors = cardRowColors(),
                     leadingContent = {
                         IconTile(item.icon, container = tone.first, content = tone.second)
                     },
@@ -285,7 +316,7 @@ private fun RestoreSheet(model: AppModel) {
             "App 里的开关要按手动清单打开。",
             style = MaterialTheme.typography.bodySmall,
             color = colors.onSurfaceVariant,
-            modifier = Modifier.padding(start = 8.dp, top = 12.dp),
+            modifier = Modifier.padding(top = 12.dp),
         )
         AnimatedVisibility(model.restoring) {
             LinearWavyProgressIndicator(
@@ -336,7 +367,7 @@ private fun FeedbackSheet(model: AppModel, sheet: Sheet.Feedback) {
             .verticalScroll(rememberScrollState()),
     ) {
         SheetTitle("反馈问题")
-        TextButton(onClick = { model.sheet = Sheet.Support }) { Text("企业微信支持") }
+        TextButton(onClick = { model.sheet = Sheet.Support }, shapes = ButtonDefaults.shapes()) { Text("企业微信支持") }
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
@@ -345,7 +376,10 @@ private fun FeedbackSheet(model: AppModel, sheet: Sheet.Feedback) {
                 ToggleButton(
                     checked = kind == key,
                     onCheckedChange = { kind = key },
-                    modifier = Modifier.weight(1f),
+                    // 和页面主按钮同高，表单里的控件不再忽高忽低
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(ButtonDefaults.MediumContainerHeight),
                     shapes = when (i) {
                         0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
                         FeedbackKinds.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
@@ -364,7 +398,13 @@ private fun FeedbackSheet(model: AppModel, sheet: Sheet.Feedback) {
             modifier = Modifier.fillMaxWidth(),
             minLines = 4,
             isError = missing,
-            placeholder = { Text("发生了什么？你希望怎样？") },
+            // 输入框和卡片用同一档圆角与正文规格，不再各写各的
+            shape = MaterialTheme.shapes.medium,
+            textStyle = MaterialTheme.typography.bodyMedium,
+            placeholder = { Text("发生了什么？你希望怎样？", style = MaterialTheme.typography.bodyMedium) },
+            supportingText = if (missing) {
+                { Text("写几句再提交") }
+            } else null,
         )
         Spacer(Modifier.height(12.dp))
         Segments {
@@ -380,6 +420,7 @@ private fun FeedbackSheet(model: AppModel, sheet: Sheet.Feedback) {
                 onClick = { showDiag = !showDiag },
                 enabled = attach,
                 shapes = ListItemDefaults.segmentedShapes(1, 2),
+                colors = cardRowColors(),
             ) { Text(if (showDiag) "收起" else "查看 / 修改诊断信息") }
         }
         AnimatedVisibility(showDiag && attach) {
@@ -388,8 +429,9 @@ private fun FeedbackSheet(model: AppModel, sheet: Sheet.Feedback) {
                 onValueChange = { diag = it },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 240.dp)
-                    .padding(top = 12.dp),
+                    .padding(top = 12.dp)
+                    .heightIn(max = 240.dp),
+                shape = MaterialTheme.shapes.medium,
                 textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
             )
         }
@@ -398,7 +440,7 @@ private fun FeedbackSheet(model: AppModel, sheet: Sheet.Feedback) {
                 result,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 8.dp, top = 12.dp),
+                modifier = Modifier.padding(top = 12.dp),
             )
         }
         Spacer(Modifier.height(16.dp))
@@ -439,7 +481,6 @@ private fun ReportSheet(model: AppModel, payload: JSONObject) {
             "下面是本机生成的诊断内容，序列号等敏感信息已替换。不会上传到服务器；你可以先检查，再复制并自行分享。",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 8.dp),
         )
         Spacer(Modifier.height(12.dp))
         Surface(
@@ -462,7 +503,7 @@ private fun ReportSheet(model: AppModel, payload: JSONObject) {
             Text(
                 result,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 8.dp, top = 12.dp),
+                modifier = Modifier.padding(top = 12.dp),
             )
         }
         Spacer(Modifier.height(16.dp))

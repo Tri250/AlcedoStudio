@@ -4,6 +4,7 @@ package com.ahuamiao.adcleaner.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -84,7 +85,9 @@ fun HeroPage(
     middle: @Composable (maxWidth: Dp, maxHeight: Dp) -> Unit,
     actions: @Composable ColumnScope.() -> Unit,
 ) {
-    if (LocalConfiguration.current.screenHeightDp < 480) {
+    // 只在横屏这样排：矮而窄的分屏竖屏仍走上下的布局，两列会把按钮挤成一列字
+    val config = LocalConfiguration.current
+    if (config.screenHeightDp < 480 && config.screenWidthDp > config.screenHeightDp) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             Column(
                 Modifier
@@ -154,12 +157,14 @@ fun StatusPill(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.secondary,
-    contentColor: Color = color,
+    // 默认用正文色而不是圆点色，免得小字号落在 12% 底色上对比度不够
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Row(
         modifier
             .clip(CircleShape)
             .background(color.copy(alpha = 0.12f))
+            .animateContentSize(MaterialTheme.motionScheme.fastSpatialSpec())
             .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -174,14 +179,15 @@ fun StatusPill(
             text,
             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
             color = contentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
 
-/** 主按钮：屏幕够高用 L（96dp）；矮屏用 M（56dp），把位置留给内容。 */
+/** 主按钮高度：全 App 统一 56dp，首页、设置向导、状态页、结果页是同一套控件。 */
 @Composable
-fun ctaHeight(): Dp =
-    if (LocalConfiguration.current.screenHeightDp < 700) ButtonDefaults.MediumContainerHeight else ButtonDefaults.LargeContainerHeight
+fun ctaHeight(): Dp = ButtonDefaults.MediumContainerHeight
 
 /** 顶栏跟内容同宽：折叠屏内屏和横屏时标题才和卡片对齐。 */
 @Composable
@@ -348,15 +354,34 @@ fun SectionTitle(
             text,
             style = MaterialTheme.typography.titleSmallEmphasized,
             color = MaterialTheme.colorScheme.primary,
+            // 窄屏上右侧还有「全选 / 全不选 / 刷新」时允许两行，别把数字截掉
             modifier = Modifier.weight(1f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
         )
         trailing?.invoke(this)
     }
 }
 
+/** 普通分段行：卡片统一用 surface，和页面底色拉开一档，不跟随系统默认的容器色。 */
+@Composable
+fun cardRowColors() = ListItemDefaults.segmentedColors(
+    containerColor = MaterialTheme.colorScheme.surface,
+    contentColor = MaterialTheme.colorScheme.onSurface,
+    leadingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    trailingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    supportingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledContainerColor = MaterialTheme.colorScheme.surface,
+)
+
 /** 带开关的分段行：开没开看开关，整行不染色（选中色整块铺开太抢，文字对比度也不稳）。 */
 @Composable
 fun toggleRowColors() = ListItemDefaults.segmentedColors(
+    containerColor = MaterialTheme.colorScheme.surface,
+    contentColor = MaterialTheme.colorScheme.onSurface,
+    leadingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    trailingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    supportingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
     selectedContainerColor = MaterialTheme.colorScheme.surface,
     selectedContentColor = MaterialTheme.colorScheme.onSurface,
     selectedLeadingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,

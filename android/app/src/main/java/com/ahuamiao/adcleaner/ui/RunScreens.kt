@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -58,6 +57,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -73,7 +73,7 @@ fun PrepareScreen(model: AppModel, at: Int) {
     val colors = MaterialTheme.colorScheme
     HeroPage(
         middle = { maxWidth, maxHeight ->
-            val size = min(maxWidth * 0.5f, maxHeight - 88.dp)
+            val size = min(maxWidth * 0.5f, (maxHeight - 88.dp).coerceAtLeast(72.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Hero(MaterialShapes.Circle, colors.primaryContainer, Modifier.size(size)) {
                     LoadingIndicator(Modifier.size(size * 0.72f), color = colors.onPrimaryContainer)
@@ -83,43 +83,44 @@ fun PrepareScreen(model: AppModel, at: Int) {
             }
         },
         actions = {
-        Segments {
-            PrepareItems.forEachIndexed { i, label ->
-                val done = i < at
-                val current = i == at
-                SegmentedListItem(
-                    shapes = ListItemDefaults.segmentedShapes(i, PrepareItems.size),
-                    leadingContent = {
-                        ShapeBadge(
-                            MaterialShapes.Circle,
-                            if (done) colors.secondary else colors.surfaceContainerHighest,
-                            Modifier.size(32.dp),
-                        ) {
-                            when {
-                                done -> CompositionLocalProvider(LocalContentColor provides colors.onSecondary) {
-                                    Glyph(R.drawable.ic_check, Modifier.size(18.dp))
+            Segments {
+                PrepareItems.forEachIndexed { i, label ->
+                    val done = i < at
+                    val current = i == at
+                    SegmentedListItem(
+                        shapes = ListItemDefaults.segmentedShapes(i, PrepareItems.size),
+                        colors = cardRowColors(),
+                        leadingContent = {
+                            ShapeBadge(
+                                MaterialShapes.Circle,
+                                if (done) colors.secondary else colors.surfaceContainerHighest,
+                                Modifier.size(36.dp),
+                            ) {
+                                when {
+                                    done -> CompositionLocalProvider(LocalContentColor provides colors.onSecondary) {
+                                        Glyph(R.drawable.ic_check, Modifier.size(18.dp), label = "已完成")
+                                    }
+                                    current -> LoadingIndicator(Modifier.size(28.dp))
+                                    else -> Text("${i + 1}", style = MaterialTheme.typography.labelLarge)
                                 }
-                                current -> LoadingIndicator(Modifier.size(28.dp))
-                                else -> Text("${i + 1}", style = MaterialTheme.typography.labelLarge)
                             }
-                        }
-                    },
-                ) {
-                    Text(
-                        label,
-                        style = if (current) MaterialTheme.typography.titleMediumEmphasized else MaterialTheme.typography.titleMedium,
-                    )
+                        },
+                    ) {
+                        Text(
+                            label,
+                            style = if (current) MaterialTheme.typography.titleMediumEmphasized else MaterialTheme.typography.titleMedium,
+                        )
+                    }
                 }
             }
-        }
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .height(64.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            TextButton(onClick = model::goHomeNow, shapes = ButtonDefaults.shapes()) { Text("取消") }
-        }
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                TextButton(onClick = model::goHomeNow, shapes = ButtonDefaults.shapes()) { Text("取消") }
+            }
         },
     )
 }
@@ -144,6 +145,7 @@ fun RunScreen(model: AppModel) {
     val colors = MaterialTheme.colorScheme
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
+    val reduce = LocalReduceMotion.current
 
     // 每进一步，中间的形状变一次、手上轻轻一下
     LaunchedEffect(run.idx) {
@@ -169,7 +171,7 @@ fun RunScreen(model: AppModel) {
             }
         },
         middle = { maxWidth, maxHeight ->
-            val ring = min(maxWidth * 0.82f, maxHeight - 152.dp)
+            val ring = min(maxWidth * 0.82f, (maxHeight - 152.dp).coerceAtLeast(128.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(contentAlignment = Alignment.Center) {
                     val stroke = with(density) { Stroke(width = 10.dp.toPx(), cap = StrokeCap.Round) }
@@ -207,8 +209,12 @@ fun RunScreen(model: AppModel) {
                 AnimatedContent(
                     targetState = run.title.ifEmpty { "准备中" },
                     transitionSpec = {
-                        (slideInVertically(slide) { it / 2 } + fadeIn()) togetherWith
-                            (slideOutVertically(slide) { -it / 2 } + fadeOut())
+                        if (reduce) {
+                            fadeIn() togetherWith fadeOut()
+                        } else {
+                            (slideInVertically(slide) { it / 2 } + fadeIn()) togetherWith
+                                (slideOutVertically(slide) { -it / 2 } + fadeOut())
+                        }
                     },
                     label = "step",
                 ) { title ->
@@ -217,6 +223,7 @@ fun RunScreen(model: AppModel) {
                         style = MaterialTheme.typography.titleLargeEmphasized,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                     )
                 }
@@ -229,7 +236,7 @@ fun RunScreen(model: AppModel) {
                 Spacer(Modifier.height(12.dp))
                 val status = runStatus(run, model.runMode)
                 Surface(
-                    shape = RoundedCornerShape(20.dp),
+                    shape = MaterialTheme.shapes.large,
                     color = if (status.attention) colors.tertiaryContainer else colors.surfaceContainerHigh,
                     contentColor = if (status.attention) colors.onTertiaryContainer else colors.onSurfaceVariant,
                 ) {
@@ -268,6 +275,7 @@ private fun StepCounter(run: RunProgress) {
             withStyle(SpanStyle(fontSize = small.fontSize, fontWeight = small.fontWeight)) { append(" / ${run.total}") }
         },
         style = big,
+        maxLines = 1,
     )
 }
 
@@ -287,21 +295,23 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
     val haptic = LocalHapticFeedback.current
     val copy = doneCopy(run)
     val pop = remember { Animatable(0.3f) }
+    val reduce = LocalReduceMotion.current
     val popSpec = MaterialTheme.motionScheme.slowSpatialSpec<Float>()
     LaunchedEffect(Unit) {
         haptic.performHapticFeedback(
             if (run.outcome == Outcome.Failed) HapticFeedbackType.Reject else HapticFeedbackType.Confirm,
         )
-        pop.animateTo(1f, popSpec)
+        if (reduce) pop.snapTo(1f) else pop.animateTo(1f, popSpec)
     }
     val polygon = MaterialShapes.Circle
     val fill = when (run.outcome) {
-        Outcome.Ok -> colors.primary
+        // 成功用品牌第二色（薄荷绿），和首页「已就绪」、列表里的完成状态同一套
+        Outcome.Ok -> colors.secondary
         Outcome.Failed -> colors.errorContainer
         Outcome.Stopped -> colors.surfaceContainerHighest
     }
     val tint = when (run.outcome) {
-        Outcome.Ok -> colors.onPrimary
+        Outcome.Ok -> colors.onSecondary
         Outcome.Failed -> colors.onErrorContainer
         Outcome.Stopped -> colors.onSurfaceVariant
     }
@@ -363,6 +373,7 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                         SizedButton(
                             "重试没成功的步骤（${run.retry}）",
                             model::retry,
+                            modifier = Modifier.fillMaxWidth(),
                             icon = R.drawable.ic_restart_alt,
                         )
                     }
@@ -377,6 +388,7 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                         SegmentedListItem(
                             onClick = model::checkUi,
                             shapes = ListItemDefaults.segmentedShapes(0, 2),
+                            colors = cardRowColors(),
                             leadingContent = {
                                 IconTile(
                                     R.drawable.ic_smartphone,
@@ -389,6 +401,7 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                         SegmentedListItem(
                             onClick = model::copyDiagnostics,
                             shapes = ListItemDefaults.segmentedShapes(1, 2),
+                            colors = cardRowColors(),
                             leadingContent = {
                                 IconTile(
                                     R.drawable.ic_content_copy,
@@ -417,6 +430,7 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                             )
                         },
                         shapes = ListItemDefaults.segmentedShapes(0, rows),
+                        colors = cardRowColors(),
                         leadingContent = {
                             IconTile(
                                 R.drawable.ic_developer_mode,
@@ -435,6 +449,7 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                         SegmentedListItem(
                             onClick = model::openReport,
                             shapes = ListItemDefaults.segmentedShapes(1, rows),
+                            colors = cardRowColors(),
                             leadingContent = {
                                 IconTile(
                                     R.drawable.ic_upload,
@@ -447,6 +462,7 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                         SegmentedListItem(
                             onClick = { model.openFeedback("bug") },
                             shapes = ListItemDefaults.segmentedShapes(2, rows),
+                            colors = cardRowColors(),
                             leadingContent = {
                                 IconTile(
                                     R.drawable.ic_bug_report,
@@ -459,6 +475,7 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                     SegmentedListItem(
                         onClick = { model.sheet = Sheet.Log },
                         shapes = ListItemDefaults.segmentedShapes(rows - 1, rows),
+                        colors = cardRowColors(),
                         leadingContent = {
                             IconTile(
                                 R.drawable.ic_receipt_long,
@@ -516,10 +533,11 @@ private fun ResultRow(index: Int, count: Int, r: StepResult) {
     }
     SegmentedListItem(
         shapes = ListItemDefaults.segmentedShapes(index, count),
+        colors = cardRowColors(),
         leadingContent = {
             ShapeBadge(MaterialShapes.Circle, fill, Modifier.size(36.dp)) {
                 CompositionLocalProvider(LocalContentColor provides tint) {
-                    Glyph(icon, Modifier.size(20.dp))
+                    Glyph(icon, Modifier.size(20.dp), label = state.ifEmpty { "成功" })
                 }
             }
         },

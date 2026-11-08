@@ -42,6 +42,7 @@ fun App(model: AppModel, host: HostActions) {
         val colors = MaterialTheme.colorScheme
         val motion = MaterialTheme.motionScheme
         val hero = remember { HeroState() }
+        val reduce = LocalReduceMotion.current
         val slide = motion.defaultSpatialSpec<IntOffset>()
         val fade = motion.defaultEffectsSpec<Float>()
 
@@ -78,10 +79,15 @@ fun App(model: AppModel, host: HostActions) {
                         targetState = model.screen,
                         contentKey = { it::class },
                         transitionSpec = {
-                            val dir = if (rank(targetState) >= rank(initialState)) 1 else -1
-                            (slideInHorizontally(slide) { dir * it / 8 } + fadeIn(fade)) togetherWith
-                                (slideOutHorizontally(slide) { -dir * it / 8 } + fadeOut(fade)) using
-                                SizeTransform(clip = false)
+                            // 系统关了动画就只做淡入淡出，不做位移
+                            if (reduce) {
+                                fadeIn(fade) togetherWith fadeOut(fade)
+                            } else {
+                                val dir = if (rank(targetState) >= rank(initialState)) 1 else -1
+                                (slideInHorizontally(slide) { dir * it / 8 } + fadeIn(fade)) togetherWith
+                                    (slideOutHorizontally(slide) { -dir * it / 8 } + fadeOut(fade)) using
+                                    SizeTransform(clip = false)
+                            }
                         },
                         label = "screen",
                     ) { screen ->

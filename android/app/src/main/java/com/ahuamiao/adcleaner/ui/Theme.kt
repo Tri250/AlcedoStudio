@@ -64,7 +64,8 @@ fun AacTheme(content: @Composable () -> Unit) {
         secondaryContainer = Color(0xFF0F4F46), onSecondaryContainer = Color(0xFFC9F6EC),
         tertiary = Color(0xFFFFC85C), onTertiary = Color(0xFF3D2A00),
         tertiaryContainer = Color(0xFF5A4100), onTertiaryContainer = Color(0xFFFFE7B3),
-        background = Color(0xFF0B0E14), surface = Color(0xFF151A24),
+        // 卡片比页面亮一档：深色下也看得出层次，不容易和底色糊在一起
+        background = Color(0xFF0B0E14), surface = Color(0xFF191F2B),
         // 中性梯度全部带蓝味，与品牌底色同调
         onBackground = Color(0xFFE7EAF2), onSurface = Color(0xFFE7EAF2),
         surfaceVariant = Color(0xFF3D4454), onSurfaceVariant = Color(0xFFC1C7D6),
