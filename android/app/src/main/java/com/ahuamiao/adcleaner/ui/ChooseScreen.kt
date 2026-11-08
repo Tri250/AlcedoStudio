@@ -121,8 +121,10 @@ private fun StartToolbar(model: AppModel, selection: Selection, modifier: Modifi
         expanded = true,
         // 玻璃效果：半透容器透出底下滚动的列表，发丝描边勾出轮廓（vibrant 是实心的，太抢）
         colors = FloatingToolbarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.86f),
-            contentColor = MaterialTheme.colorScheme.onSurface,
+            toolbarContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.86f),
+            toolbarContentColor = MaterialTheme.colorScheme.onSurface,
+            fabContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.86f),
+            fabContentColor = MaterialTheme.colorScheme.onSurface,
         ),
         modifier = modifier
             .navigationBarsPadding()
