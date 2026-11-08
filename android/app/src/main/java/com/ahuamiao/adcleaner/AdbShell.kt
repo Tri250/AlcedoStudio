@@ -80,6 +80,7 @@ object AdbShell {
                 android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT)
             nm.notify(5, android.app.Notification.Builder(app, KeepAliveService.CHANNEL)
                 .setSmallIcon(android.R.drawable.ic_popup_sync)
+                .setColor(BRAND_COLOR)
                 .setContentTitle("无线调试已自动重新打开")
                 .setContentText("已重新连上，可以照常用手机")
                 .setContentIntent(open)

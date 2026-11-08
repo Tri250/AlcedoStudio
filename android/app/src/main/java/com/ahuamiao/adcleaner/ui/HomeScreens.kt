@@ -2,7 +2,12 @@
 
 package com.ahuamiao.adcleaner.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Brush
@@ -180,9 +185,13 @@ fun HomeScreen(model: AppModel) {
         actions = {
             SizedButton(
                 text = "超级清静",
-                onClick = model::confirmSuperClean,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                    model.confirmSuperClean()
+                },
                 modifier = Modifier.fillMaxWidth(),
                 height = ctaHeight(),
+                interactionSource = press,
             )
             Spacer(Modifier.height(8.dp))
             SizedButton(
@@ -325,8 +334,19 @@ private fun SetupRow(index: Int, count: Int, step: SetupStep, done: Boolean, cur
         leadingContent = {
             ShapeBadge(polygon, badgeColor, Modifier.size(40.dp)) {
                 CompositionLocalProvider(LocalContentColor provides badgeContent) {
-                    if (done) Glyph(R.drawable.ic_check, Modifier.size(20.dp))
-                    else Text("${index + 1}", style = MaterialTheme.typography.titleMediumEmphasized)
+                    // 完成瞬间：数字→对勾缩放+淡入，不硬切；步进时数字换号保持瞬时
+                    val motion = MaterialTheme.motionScheme
+                    AnimatedContent(
+                        done,
+                        transitionSpec = {
+                            (scaleIn(motion.fastEffectsSpec(), initialScale = 0.6f) + fadeIn(motion.fastEffectsSpec())) togetherWith
+                                fadeOut(motion.fastEffectsSpec())
+                        },
+                        label = "setup-badge",
+                    ) { checked ->
+                        if (checked) Glyph(R.drawable.ic_check, Modifier.size(20.dp))
+                        else Text("${index + 1}", style = MaterialTheme.typography.titleMediumEmphasized)
+                    }
                 }
             }
         },

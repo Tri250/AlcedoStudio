@@ -8,6 +8,8 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +36,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.FloatingToolbarColors
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.IconButton
@@ -116,11 +119,20 @@ private fun StartToolbar(model: AppModel, selection: Selection, modifier: Modifi
     val height = ButtonDefaults.MinHeight
     HorizontalFloatingToolbar(
         expanded = true,
+        // 玻璃效果：半透容器透出底下滚动的列表，发丝描边勾出轮廓（vibrant 是实心的，太抢）
+        colors = FloatingToolbarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.86f),
+            contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
         modifier = modifier
             .navigationBarsPadding()
             .padding(bottom = 16.dp)
-            .height(FloatingToolbarDefaults.ContainerSize),
-        colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+            .height(FloatingToolbarDefaults.ContainerSize)
+            .border(
+                1.dp,
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+                CircleShape,
+            ),
     ) {
         Text(
             "已选 ${selection.count} 项",

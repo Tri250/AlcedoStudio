@@ -23,6 +23,9 @@ import java.io.File
  * Python 侧要用到的系统能力：打开网页、复制、提示音、执行期间保活。桌面版在这些地方用 webbrowser / afplay / winsound。
  * 由 aac_android 经 Chaquopy 的 jclass 调用，全部是静态方法。
  */
+/** 品牌主色：通知着色与悬浮胶囊共用（与 ui/Theme.kt 的 primary 同一值）。 */
+const val BRAND_COLOR = 0xFF2866F7.toInt()
+
 object Native {
     lateinit var app: Context
     private val main = Handler(Looper.getMainLooper())
@@ -131,7 +134,7 @@ object Native {
             textSize = 11f
             setTextColor(0xFFFFFFFF.toInt())
             setPadding((8 * dp).toInt(), (5 * dp).toInt(), (10 * dp).toInt(), (5 * dp).toInt())
-            background = GradientDrawable().apply { setColor(0xCC2F6FEC.toInt()); cornerRadius = 14 * dp }
+            background = GradientDrawable().apply { setColor(0xCC2866F7.toInt()); cornerRadius = 14 * dp }
         }
         val lp = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
@@ -163,6 +166,7 @@ object Native {
             android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT)
         nm.notify(2, android.app.Notification.Builder(app, DONE_CHANNEL)
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
+            .setColor(BRAND_COLOR)
             .setContentTitle(title)
             .setContentText(text)
             .setContentIntent(open)
@@ -189,6 +193,7 @@ object Native {
             android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT)
         nm.notify(SETUP_ID, android.app.Notification.Builder(app, SETUP_CHANNEL)
             .setSmallIcon(android.R.drawable.ic_menu_view)
+            .setColor(BRAND_COLOR)
             .setContentTitle(title)
             .setContentText(text)
             .setStyle(android.app.Notification.BigTextStyle().bigText(text))
@@ -210,6 +215,7 @@ object Native {
             android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT)
         nm.notify(STALL_ID, android.app.Notification.Builder(app, DONE_CHANNEL)
             .setSmallIcon(android.R.drawable.stat_sys_warning)
+            .setColor(BRAND_COLOR)
             .setContentTitle("去广告可能卡住了")
             .setContentText("已经 1 分钟没有进展，点这里看看")
             .setContentIntent(open)

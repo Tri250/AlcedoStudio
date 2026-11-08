@@ -47,6 +47,7 @@ object Pairing {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val builder = Notification.Builder(context, CHANNEL)
             .setSmallIcon(android.R.drawable.ic_menu_edit)
+            .setColor(BRAND_COLOR)
             .setContentTitle(title)
             .setContentText(text)
             .setStyle(Notification.BigTextStyle().bigText(text))

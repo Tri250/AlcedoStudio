@@ -228,6 +228,7 @@ class PairingService : Service() {
         val stop = PendingIntent.getService(this, 5, Intent(this, PairingService::class.java).setAction(STOP), PendingIntent.FLAG_IMMUTABLE)
         return Notification.Builder(this, CHANNEL)
             .setSmallIcon(android.R.drawable.ic_menu_view)
+            .setColor(BRAND_COLOR)
             .setContentTitle(title)
             .setContentText(text)
             .setStyle(Notification.BigTextStyle().bigText(text))

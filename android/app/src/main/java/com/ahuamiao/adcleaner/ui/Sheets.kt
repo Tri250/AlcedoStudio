@@ -134,7 +134,7 @@ private fun MoreSheet(model: AppModel) {
             SegmentedListItem(
                 onClick = { model.sheet = Sheet.Support },
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
-                leadingContent = { Glyph(R.drawable.ic_chat_bubble) },
+                leadingContent = { Glyph(R.drawable.ic_headset) },
             ) { Text("企业微信支持") }
             SegmentedListItem(
                 onClick = { model.openUrl(GUIDE_URL) },

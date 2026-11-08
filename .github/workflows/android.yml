@@ -1,8 +1,10 @@
 name: android
 on:
   workflow_dispatch:
+  push:
+    tags: ['v*']
 permissions:
-  contents: read
+  contents: write
 jobs:
   assemble:
     runs-on: ubuntu-latest
@@ -32,6 +34,10 @@ jobs:
           KEYSTORE_B64: ${{ secrets.QINGJING_KEYSTORE_B64 }}
           KEY_PASSWORD: ${{ secrets.QINGJING_KEY_PASSWORD }}
         run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "⚠️ 未配置 QINGJING_KEYSTORE_B64 / QINGJING_KEY_PASSWORD，本次构建退回 debug 签名：可以安装验证，但不是正式发布签名。" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           python - <<'PY'
           import os, base64
           from pathlib import Path
@@ -62,3 +68,14 @@ jobs:
           name: Qingjing-AiGoodBro-android-1108v4
           path: delivery/
           if-no-files-found: error
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "清静 · AiGoodBro ${GITHUB_REF_NAME}" \
+            --generate-notes \
+            delivery/Qingjing-AiGoodBro-1.0.3-1108v4-android-arm64.apk \
+            delivery/SHA256SUMS-android.txt \
+            delivery/android-package-info.txt

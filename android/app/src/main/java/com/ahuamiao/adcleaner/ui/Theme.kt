@@ -7,9 +7,6 @@ import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.expressiveLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -52,11 +49,22 @@ fun AacTheme(content: @Composable () -> Unit) {
         primary = Color(0xFF9AB4FF), onPrimary = Color(0xFF002B84),
         primaryContainer = Color(0xFF1648B9), onPrimaryContainer = Color.White,
         background = Color(0xFF13141A), surface = Color(0xFF13141A),
+        // 中性梯度全部带蓝味，与品牌底色 13141A 同调（基线里是红味灰，混用会脏）
+        onBackground = Color(0xFFE3E5EE), onSurface = Color(0xFFE3E5EE),
+        surfaceVariant = Color(0xFF3E4353), onSurfaceVariant = Color(0xFFC2C7D6),
+        outline = Color(0xFF8B91A4), outlineVariant = Color(0xFF41475A),
+        surfaceDim = Color(0xFF13141A),
+        surfaceContainerLowest = Color(0xFF0D0F15), surfaceContainerLow = Color(0xFF191B23),
         surfaceContainer = Color(0xFF1E2028), surfaceContainerHigh = Color(0xFF292B34),
     ) else lightColorScheme(
         primary = Color(0xFF2866F7), onPrimary = Color.White,
         primaryContainer = Color(0xFFDDE6FF), onPrimaryContainer = Color(0xFF102F7A),
         background = Color(0xFFF4F5F9), surface = Color(0xFFF4F5F9),
+        onBackground = Color(0xFF191B22), onSurface = Color(0xFF191B22),
+        surfaceVariant = Color(0xFFE3E6F0), onSurfaceVariant = Color(0xFF4A4F60),
+        outline = Color(0xFF767C90), outlineVariant = Color(0xFFC6CBDA),
+        surfaceDim = Color(0xFFD5D8E2),
+        surfaceContainerLowest = Color(0xFFFFFFFF), surfaceContainerLow = Color(0xFFF0F2F8),
         surfaceContainer = Color.White, surfaceContainerHigh = Color(0xFFE9ECF4),
     )
     val reduce = remember {

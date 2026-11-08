@@ -229,7 +229,8 @@ class AppModel(
 
     /** 一键：检测、扫描连着做完，停在确认页（勾选是默认值），用户点「开始」才执行。 */
     fun oneTap() = flow {
-        val serial = device?.serial ?: return@flow
+        // 设备信息还没查到时点了「超级清静」：不能静默没反应，回首页让刷新接着认设备
+        val serial = device?.serial ?: return@flow goHome()
         show(Screen.Prepare(0))
         val selection = detect(serial) ?: return@flow goHome()
         if (selection.detection.blocked) {
@@ -252,7 +253,8 @@ class AppModel(
     }
 
     private fun superClean() = flow {
-        val serial = device?.serial ?: return@flow
+        // 设备信息还没查到就确认了：回首页刷新，别让「开始超级清静」无声无息
+        val serial = device?.serial ?: return@flow goHome()
         show(Screen.Prepare(0))
         val selected = detect(serial) ?: return@flow goHome()
         if (selected.detection.blocked) {
@@ -282,14 +284,20 @@ class AppModel(
      * 只在确认页调用——清空 [selection] 期间由确认页自带加载态，不必自己切 screen。
      */
     fun restartScan() = flow {
-        val serial = device?.serial ?: return@flow
+        val serial = device?.serial ?: run {
+            notice = Notice("还没连上手机", "连接状态还没就绪，稍后再试。")
+            return@flow
+        }
         selection = null
         val selection = detect(serial) ?: return@flow goHome()
         scan(serial, selection)      // 只读；被挡住（锁屏、展开的折叠屏）也先列出来，处理完直接能开始
     }
 
     fun rescan() = flow {
-        val serial = device?.serial ?: return@flow
+        val serial = device?.serial ?: run {
+            notice = Notice("还没连上手机", "连接状态还没就绪，稍后再试。")
+            return@flow
+        }
         val selection = selection ?: return@flow
         scan(serial, selection)
     }
@@ -323,8 +331,12 @@ class AppModel(
     }
 
     fun startChosen() = flow {
-        val serial = device?.serial ?: return@flow
         val selection = selection ?: return@flow
+        // 设备信息还没查到时点了「开始」：给个说法，别让按钮像坏的
+        val serial = device?.serial ?: run {
+            notice = Notice("还没连上手机", "连接状态还没就绪，稍等几秒再点「开始」，或回首页重新连接。")
+            return@flow
+        }
         if (selection.count == 0) {
             notice = Notice("还没选任何一项", "选好要关的项目再开始。都不用关的话，可以去完成页关闭开发者模式。",
                 confirm = "去完成页", onConfirm = { show(Screen.Done(RunProgress())) }, dismiss = "返回")
@@ -361,13 +373,21 @@ class AppModel(
         val mode = launch { watchMode() }
         var next = 0
         var idle = 0
+        var errs = 0
         while (isActive) {
             val run = try {
                 poll(next)
             } catch (_: EngineError) {
+                // 引擎连续一分半答不上来（多半已被系统杀掉）：别让执行页永远转圈
+                if (++errs > 90) {
+                    mode.cancel()
+                    show(Screen.Failed("App 后台没有响应了。回到首页重新开始；如果反复出现，请在结果页反馈给我们。"))
+                    return@coroutineScope
+                }
                 delay(1000)
                 continue
             }
+            errs = 0
             next = run.next
             log.addAll(run.lines)
             progress = run

@@ -3,6 +3,11 @@
 package com.ahuamiao.adcleaner.ui
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -158,10 +164,26 @@ fun SizedButton(
 @Composable
 fun RowScope.ButtonLabel(text: String, height: Dp, @DrawableRes icon: Int? = null) {
     if (icon != null) {
-        Glyph(icon, Modifier.size(ButtonDefaults.iconSizeFor(height)))
+        // 图标换态（暂停↔继续）：缩放+淡入淡出，规格跟主题动画令牌走
+        val motion = MaterialTheme.motionScheme
+        AnimatedContent(
+            icon,
+            transitionSpec = {
+                (scaleIn(motion.fastEffectsSpec(), initialScale = 0.7f) + fadeIn(motion.fastEffectsSpec())) togetherWith
+                    fadeOut(motion.fastEffectsSpec())
+            },
+            label = "btn-icon",
+        ) { ic ->
+            Glyph(ic, Modifier.size(ButtonDefaults.iconSizeFor(height)))
+        }
         Spacer(Modifier.width(ButtonDefaults.iconSpacingFor(height)))
     }
-    Text(text, style = ButtonDefaults.textStyleFor(height).copy(fontWeight = FontWeight.SemiBold), maxLines = 1)
+    Text(
+        text,
+        style = ButtonDefaults.textStyleFor(height).copy(fontWeight = FontWeight.SemiBold),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
 }
 
 data class GroupAction(
