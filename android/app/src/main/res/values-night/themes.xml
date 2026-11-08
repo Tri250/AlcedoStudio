@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Aac" parent="android:Theme.Material.NoActionBar">
-        <!-- 和 Compose 里的页面底色一致，冷启动不会先闪一下纯黑 -->
-        <item name="android:windowBackground">#0B0E14</item>
+        <!-- 冷启动先看到品牌方块（window_splash，浅夜两色），第一帧之后是 Compose 页面，不闪纯黑 -->
+        <item name="android:windowBackground">@drawable/window_splash</item>
     </style>
 </resources>

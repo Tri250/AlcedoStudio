@@ -14,8 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.material3.lightColorScheme
 
 /** 用户在系统里关了动画：形状不再持续旋转，其余动效由 Compose 按系统比例缩短。 */
@@ -27,19 +29,33 @@ const val TABULAR = "tnum"
 /**
  * 强调字重。官方令牌是 500，可很多中文字体只有常规和粗体两档，500 落回常规，强调就没了。
  * 标题和大字用粗体，小一号的用 600（只有两档的字体也会落到粗体）。
+ *
+ * 中文字距：M3 的字距是按拉丁字母调的，汉字方块字自带间距，再叠 0.1~0.5sp 就发飘。
+ * 界面全是要给中文看的，把用到的字阶字距清零；正文说明行高放宽到 18sp，长句不挤。
  */
+private fun TextStyle.cn() = copy(letterSpacing = 0.sp)
+
 private val AacTypography = Typography().run {
     copy(
-        displayLargeEmphasized = displayLargeEmphasized.copy(fontWeight = FontWeight.Bold),
-        displayMediumEmphasized = displayMediumEmphasized.copy(fontWeight = FontWeight.Bold),
-        displaySmallEmphasized = displaySmallEmphasized.copy(fontWeight = FontWeight.Bold),
-        headlineLargeEmphasized = headlineLargeEmphasized.copy(fontWeight = FontWeight.Bold),
-        headlineMediumEmphasized = headlineMediumEmphasized.copy(fontWeight = FontWeight.Bold),
-        headlineSmallEmphasized = headlineSmallEmphasized.copy(fontWeight = FontWeight.Bold),
-        titleLargeEmphasized = titleLargeEmphasized.copy(fontWeight = FontWeight.SemiBold),
-        titleMediumEmphasized = titleMediumEmphasized.copy(fontWeight = FontWeight.SemiBold),
-        titleSmallEmphasized = titleSmallEmphasized.copy(fontWeight = FontWeight.SemiBold),
-        labelLargeEmphasized = labelLargeEmphasized.copy(fontWeight = FontWeight.SemiBold),
+        displayLargeEmphasized = displayLargeEmphasized.cn().copy(fontWeight = FontWeight.Bold),
+        displayMediumEmphasized = displayMediumEmphasized.cn().copy(fontWeight = FontWeight.Bold),
+        displaySmallEmphasized = displaySmallEmphasized.cn().copy(fontWeight = FontWeight.Bold),
+        headlineLargeEmphasized = headlineLargeEmphasized.cn().copy(fontWeight = FontWeight.Bold),
+        headlineMediumEmphasized = headlineMediumEmphasized.cn().copy(fontWeight = FontWeight.Bold),
+        headlineSmallEmphasized = headlineSmallEmphasized.cn().copy(fontWeight = FontWeight.Bold),
+        titleLargeEmphasized = titleLargeEmphasized.cn().copy(fontWeight = FontWeight.SemiBold),
+        titleMediumEmphasized = titleMediumEmphasized.cn().copy(fontWeight = FontWeight.SemiBold),
+        titleSmallEmphasized = titleSmallEmphasized.cn().copy(fontWeight = FontWeight.SemiBold),
+        labelLargeEmphasized = labelLargeEmphasized.cn().copy(fontWeight = FontWeight.SemiBold),
+        titleLarge = titleLarge.cn(),
+        titleMedium = titleMedium.cn(),
+        titleSmall = titleSmall.cn(),
+        bodyLarge = bodyLarge.cn(),
+        bodyMedium = bodyMedium.cn(),
+        bodySmall = bodySmall.copy(letterSpacing = 0.sp, lineHeight = 18.sp),
+        labelLarge = labelLarge.cn(),
+        labelMedium = labelMedium.cn(),
+        labelSmall = labelSmall.cn(),
     )
 }
 

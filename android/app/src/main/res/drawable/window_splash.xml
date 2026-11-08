@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 冷启动窗口底：页面同色底 + 居中品牌方块，浅色/深色由 window_bg 颜色切 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:drawable="@color/window_bg" />
+  <item
+      android:width="88dp"
+      android:height="88dp"
+      android:gravity="center"
+      android:drawable="@drawable/ic_splash_mark" />
+</layer-list>

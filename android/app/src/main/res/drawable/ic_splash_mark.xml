@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 启动品牌时刻：品牌蓝圆角方块 + 白色「去广告」图形，和首页 BrandMark 同一语言 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="88dp"
+    android:height="88dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+  <path
+      android:fillColor="#1F5EFF"
+      android:pathData="M300,0 L660,0 Q960,0 960,300 L960,660 Q960,960 660,960 L300,960 Q0,960 0,660 L0,300 Q0,0 300,0 Z"/>
+  <group
+      android:scaleX="0.52"
+      android:scaleY="0.52"
+      android:pivotX="480"
+      android:pivotY="480">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M200,840Q167,840 143.5,816.5Q120,793 120,760L120,233Q120,233 120,233Q120,233 120,233L83,196Q72,185 72,168.5Q72,152 84,140Q95,129 112,129Q129,129 140,140L820,820Q832,832 831.5,848Q831,864 819,876Q807,887 791,887.5Q775,888 763,876L727,840Q727,840 727,840Q727,840 727,840L200,840ZM200,760L647,760L200,313L200,760Q200,760 200,760Q200,760 200,760ZM800,680Q785,680 772.5,669.5Q760,659 760,639L760,320L466,320Q450,320 435.5,314Q421,308 410,297L301,188Q291,178 289.5,167Q288,156 293,145Q298,134 307,127Q316,120 330,120L760,120Q793,120 816.5,143.5Q840,167 840,200L840,640Q840,660 827.5,670Q815,680 800,680Z"/>
+  </group>
+</vector>

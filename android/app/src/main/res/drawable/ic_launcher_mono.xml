@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 13 themed icon：手机 + 斜杠的纯剪影，系统自行上色，只认 alpha -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+  <path
+      android:fillColor="#FFFFFF"
+      android:fillType="evenOdd"
+      android:pathData="M34,14 L74,14 Q82,14 82,22 L82,86 Q82,94 74,94 L34,94 Q26,94 26,86 L26,22 Q26,14 34,14 Z M36,26 L72,26 L72,82 L36,82 Z"/>
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M46,18.5 L62,18.5 L62,21.5 L46,21.5 Z"/>
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M31,84 L71,22 L79,27 L39,89 Z"/>
+</vector>

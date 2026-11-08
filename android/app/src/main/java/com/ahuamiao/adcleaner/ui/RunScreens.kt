@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -44,6 +46,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -63,6 +67,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import com.ahuamiao.adcleaner.R
+import kotlinx.coroutines.delay
 
 // ---------- 正在准备 ---------- //
 
@@ -250,16 +255,16 @@ fun RunScreen(model: AppModel) {
             }
         },
         actions = {
-        ActionPair(
-            GroupAction(
-                text = if (run.pause) "继续" else "暂停",
-                icon = if (run.pause) R.drawable.ic_play_arrow else R.drawable.ic_pause,
-                enabled = run.running && !run.cancel,
-                onClick = { model.togglePause() },
-            ),
-            GroupAction("停止", R.drawable.ic_stop, enabled = !run.cancel, outlined = true, onClick = { model.stopRun() }),
-        )
-        Spacer(Modifier.height(16.dp))
+            ActionPair(
+                GroupAction(
+                    text = if (run.pause) "继续" else "暂停",
+                    icon = if (run.pause) R.drawable.ic_play_arrow else R.drawable.ic_pause,
+                    enabled = run.running && !run.cancel,
+                    onClick = { model.togglePause() },
+                ),
+                GroupAction("停止", R.drawable.ic_stop, enabled = !run.cancel, outlined = true, onClick = { model.stopRun() }),
+            )
+            Spacer(Modifier.height(16.dp))
         },
     )
 }
@@ -287,6 +292,34 @@ private fun doneCopy(run: RunProgress) = when (run.outcome) {
     Outcome.Ok -> DoneCopy("完成", "去负一屏、应用商店、浏览器看一眼，确认功能正常。")
     Outcome.Failed -> DoneCopy("有步骤没成功", "成功的改动已经生效，可以重新开始。")
     Outcome.Stopped -> DoneCopy("已停止", "已经关掉的不会变回去，可以重新开始。")
+}
+
+/** 成功时刻：结果形状背后两圈向外散开的涟漪，动效关掉时不画。 */
+@Composable
+private fun SuccessRipple(color: Color) {
+    if (LocalReduceMotion.current) return
+    val spec = MaterialTheme.motionScheme.slowSpatialSpec<Float>()
+    Box(contentAlignment = Alignment.Center) {
+        listOf(0, 220).forEach { delayMs ->
+            val ring = remember { Animatable(0f) }
+            LaunchedEffect(Unit) {
+                delay(delayMs.toLong())
+                ring.animateTo(1f, spec)
+            }
+            Box(
+                Modifier
+                    .size(144.dp)
+                    .graphicsLayer {
+                        val p = ring.value
+                        scaleX = 1f + 0.5f * p
+                        scaleY = 1f + 0.5f * p
+                        alpha = (1f - p) * 0.32f
+                    }
+                    .clip(CircleShape)
+                    .background(color),
+            )
+        }
+    }
 }
 
 @Composable
@@ -336,17 +369,20 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                         .padding(bottom = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Hero(polygon, fill, Modifier.size(144.dp), spin = false) {
-                        CompositionLocalProvider(LocalContentColor provides tint) {
-                            Glyph(
-                                icon,
-                                Modifier
-                                    .size(64.dp)
-                                    .graphicsLayer {
-                                        scaleX = pop.value
-                                        scaleY = pop.value
-                                    },
-                            )
+                    Box(contentAlignment = Alignment.Center) {
+                        if (run.outcome == Outcome.Ok) SuccessRipple(fill)
+                        Hero(polygon, fill, Modifier.size(144.dp), spin = false) {
+                            CompositionLocalProvider(LocalContentColor provides tint) {
+                                Glyph(
+                                    icon,
+                                    Modifier
+                                        .size(64.dp)
+                                        .graphicsLayer {
+                                            scaleX = pop.value
+                                            scaleY = pop.value
+                                        },
+                                )
+                            }
                         }
                     }
                     Spacer(Modifier.height(20.dp))
