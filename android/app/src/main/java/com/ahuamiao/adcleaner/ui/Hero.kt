@@ -77,7 +77,7 @@ fun Modifier.morphFill(state: MorphState, color: () -> Color, angle: () -> Float
 /** 贯穿首页、准备、执行、完成的那个形状。状态放在根上，换页时接着变形，不从头来。 */
 @Stable
 class HeroState {
-    val morph = MorphState(MaterialShapes.Cookie12Sided)
+    val morph = MorphState(MaterialShapes.Circle)
     var angle by mutableFloatStateOf(0f)
 }
 

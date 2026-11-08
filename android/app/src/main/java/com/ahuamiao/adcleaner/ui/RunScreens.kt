@@ -90,14 +90,13 @@ fun PrepareScreen(model: AppModel, at: Int) {
                 SegmentedListItem(
                     shapes = ListItemDefaults.segmentedShapes(i, PrepareItems.size),
                     leadingContent = {
-                        val shape = if (done) MaterialShapes.Sunny else MaterialShapes.Circle
                         ShapeBadge(
-                            shape,
-                            if (done) colors.tertiary else colors.surfaceContainerHighest,
+                            MaterialShapes.Circle,
+                            if (done) colors.secondary else colors.surfaceContainerHighest,
                             Modifier.size(32.dp),
                         ) {
                             when {
-                                done -> CompositionLocalProvider(LocalContentColor provides colors.onTertiary) {
+                                done -> CompositionLocalProvider(LocalContentColor provides colors.onSecondary) {
                                     Glyph(R.drawable.ic_check, Modifier.size(18.dp))
                                 }
                                 current -> LoadingIndicator(Modifier.size(28.dp))
@@ -126,14 +125,6 @@ fun PrepareScreen(model: AppModel, at: Int) {
 }
 
 // ---------- 执行 ---------- //
-
-private val RunShapes by lazy {
-    listOf(
-        MaterialShapes.Cookie9Sided, MaterialShapes.Clover4Leaf, MaterialShapes.Cookie6Sided, MaterialShapes.Pentagon,
-        MaterialShapes.Cookie7Sided, MaterialShapes.Gem, MaterialShapes.SoftBoom, MaterialShapes.Puffy,
-        MaterialShapes.Cookie12Sided, MaterialShapes.Flower,
-    )
-}
 
 private data class RunStatus(val text: String, val attention: Boolean)
 
@@ -202,8 +193,12 @@ fun RunScreen(model: AppModel) {
                             wavelength = 44.dp,
                         )
                     }
-                    val polygon = RunShapes[run.idx.coerceAtLeast(0) % RunShapes.size]
-                    Hero(polygon, if (still) colors.surfaceContainerHighest else colors.primaryContainer, Modifier.size(ring * 0.72f), spin = !still) {
+                    Hero(
+                        MaterialShapes.Circle,
+                        if (still) colors.surfaceContainerHighest else colors.primaryContainer,
+                        Modifier.size(ring * 0.72f),
+                        spin = !still,
+                    ) {
                         StepCounter(run)
                     }
                 }
@@ -299,11 +294,7 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
         )
         pop.animateTo(1f, popSpec)
     }
-    val polygon = when (run.outcome) {
-        Outcome.Ok -> MaterialShapes.Sunny
-        Outcome.Failed -> MaterialShapes.SoftBurst
-        Outcome.Stopped -> MaterialShapes.Square
-    }
+    val polygon = MaterialShapes.Circle
     val fill = when (run.outcome) {
         Outcome.Ok -> colors.primary
         Outcome.Failed -> colors.errorContainer
@@ -381,24 +372,37 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
             if (run.recovery.isNotEmpty()) {
                 item {
                     Spacer(Modifier.height(16.dp))
-                    SectionTitle("排查读屏连接")
+                    SectionTitle("排查读屏连接", icon = R.drawable.ic_smartphone)
                     Segments {
                         SegmentedListItem(
                             onClick = model::checkUi,
                             shapes = ListItemDefaults.segmentedShapes(0, 2),
+                            leadingContent = {
+                                IconTile(
+                                    R.drawable.ic_smartphone,
+                                    container = colors.secondaryContainer,
+                                    content = colors.onSecondaryContainer,
+                                )
+                            },
                             supportingContent = { Text(run.recovery) },
                         ) { Text("检查读屏连接") }
                         SegmentedListItem(
                             onClick = model::copyDiagnostics,
                             shapes = ListItemDefaults.segmentedShapes(1, 2),
-                            trailingContent = { Glyph(R.drawable.ic_content_copy) },
+                            leadingContent = {
+                                IconTile(
+                                    R.drawable.ic_content_copy,
+                                    container = colors.surfaceContainerHigh,
+                                    content = colors.onSurfaceVariant,
+                                )
+                            },
                         ) { Text("复制完整诊断") }
                     }
                 }
             }
             item {
                 Spacer(Modifier.height(16.dp))
-                SectionTitle("接下来")
+                SectionTitle("接下来", icon = R.drawable.ic_play_arrow)
                 val failed = run.outcome == Outcome.Failed
                 val rows = if (failed) 4 else 2
                 Segments {
@@ -413,7 +417,13 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                             )
                         },
                         shapes = ListItemDefaults.segmentedShapes(0, rows),
-                        leadingContent = { Glyph(R.drawable.ic_developer_mode) },
+                        leadingContent = {
+                            IconTile(
+                                R.drawable.ic_developer_mode,
+                                container = colors.tertiaryContainer,
+                                content = colors.onTertiaryContainer,
+                            )
+                        },
                         supportingContent = {
                             Text(
                                 if (failed) "还要排查或重试就先留着。部分银行、支付、游戏 App 检测到它开着会提醒或拒绝运行。"
@@ -425,19 +435,37 @@ fun DoneScreen(model: AppModel, run: RunProgress) {
                         SegmentedListItem(
                             onClick = model::openReport,
                             shapes = ListItemDefaults.segmentedShapes(1, rows),
-                            leadingContent = { Glyph(R.drawable.ic_upload) },
+                            leadingContent = {
+                                IconTile(
+                                    R.drawable.ic_upload,
+                                    container = colors.surfaceContainerHigh,
+                                    content = colors.onSurfaceVariant,
+                                )
+                            },
                             supportingContent = { Text("不需要账号，发送前可以看到全部内容") },
                         ) { Text("上报错误日志") }
                         SegmentedListItem(
                             onClick = { model.openFeedback("bug") },
                             shapes = ListItemDefaults.segmentedShapes(2, rows),
-                            leadingContent = { Glyph(R.drawable.ic_bug_report) },
+                            leadingContent = {
+                                IconTile(
+                                    R.drawable.ic_bug_report,
+                                    container = colors.surfaceContainerHigh,
+                                    content = colors.onSurfaceVariant,
+                                )
+                            },
                         ) { Text("到 GitHub 反馈") }
                     }
                     SegmentedListItem(
                         onClick = { model.sheet = Sheet.Log },
                         shapes = ListItemDefaults.segmentedShapes(rows - 1, rows),
-                        leadingContent = { Glyph(R.drawable.ic_receipt_long) },
+                        leadingContent = {
+                            IconTile(
+                                R.drawable.ic_receipt_long,
+                                container = colors.surfaceContainerHigh,
+                                content = colors.onSurfaceVariant,
+                            )
+                        },
                     ) { Text("查看完整日志") }
                 }
             }
@@ -466,12 +494,12 @@ private fun ResultRow(index: Int, count: Int, r: StepResult) {
     val colors = MaterialTheme.colorScheme
     val fill = when {
         r.skipped || r.stopped -> colors.surfaceContainerHighest
-        r.ok -> colors.tertiaryContainer
+        r.ok -> colors.secondaryContainer
         else -> colors.errorContainer
     }
     val tint = when {
         r.skipped || r.stopped -> colors.onSurfaceVariant
-        r.ok -> colors.onTertiaryContainer
+        r.ok -> colors.onSecondaryContainer
         else -> colors.onErrorContainer
     }
     val icon = when {
@@ -489,7 +517,7 @@ private fun ResultRow(index: Int, count: Int, r: StepResult) {
     SegmentedListItem(
         shapes = ListItemDefaults.segmentedShapes(index, count),
         leadingContent = {
-            ShapeBadge(if (r.ok) MaterialShapes.Cookie6Sided else MaterialShapes.Circle, fill, Modifier.size(36.dp)) {
+            ShapeBadge(MaterialShapes.Circle, fill, Modifier.size(36.dp)) {
                 CompositionLocalProvider(LocalContentColor provides tint) {
                     Glyph(icon, Modifier.size(20.dp))
                 }

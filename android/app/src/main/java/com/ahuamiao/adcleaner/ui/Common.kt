@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
@@ -35,14 +37,19 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -118,6 +125,59 @@ fun Glyph(@DrawableRes id: Int, modifier: Modifier = Modifier, label: String? = 
     Icon(painterResource(id), contentDescription = label, modifier = modifier)
 }
 
+/** 品牌图标底座：统一 40dp / 12dp 圆角 / 20dp 图标，列表里的图标不再大小不一。 */
+@Composable
+fun IconTile(
+    @DrawableRes icon: Int,
+    modifier: Modifier = Modifier,
+    container: Color = MaterialTheme.colorScheme.primaryContainer,
+    content: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    size: Dp = 40.dp,
+    shape: Shape = RoundedCornerShape(12.dp),
+) {
+    Box(
+        modifier
+            .size(size)
+            .clip(shape)
+            .background(container),
+        contentAlignment = Alignment.Center,
+    ) {
+        CompositionLocalProvider(LocalContentColor provides content) {
+            Glyph(icon, Modifier.size(size * 0.5f))
+        }
+    }
+}
+
+/** 状态胶囊：圆点 + 短文字。替换首页那个 10dp 的小方块。 */
+@Composable
+fun StatusPill(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.secondary,
+    contentColor: Color = color,
+) {
+    Row(
+        modifier
+            .clip(CircleShape)
+            .background(color.copy(alpha = 0.12f))
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(6.dp)
+                .clip(CircleShape)
+                .background(color),
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text,
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = contentColor,
+        )
+    }
+}
+
 /** 主按钮：屏幕够高用 L（96dp）；矮屏用 M（56dp），把位置留给内容。 */
 @Composable
 fun ctaHeight(): Dp =
@@ -146,18 +206,32 @@ fun SizedButton(
     @DrawableRes icon: Int? = null,
     enabled: Boolean = true,
     tonal: Boolean = false,
+    outlined: Boolean = false,
     interactionSource: MutableInteractionSource? = null,
 ) {
-    Button(
-        onClick = onClick,
-        shapes = ButtonDefaults.shapesFor(height),
-        modifier = modifier.heightIn(min = height),
-        enabled = enabled,
-        colors = if (tonal) ButtonDefaults.filledTonalButtonColors() else ButtonDefaults.buttonColors(),
-        contentPadding = ButtonDefaults.contentPaddingFor(height),
-        interactionSource = interactionSource,
-    ) {
-        ButtonLabel(text, height, icon)
+    if (outlined) {
+        OutlinedButton(
+            onClick = onClick,
+            shapes = ButtonDefaults.shapesFor(height),
+            modifier = modifier.heightIn(min = height),
+            enabled = enabled,
+            contentPadding = ButtonDefaults.contentPaddingFor(height),
+            interactionSource = interactionSource,
+        ) {
+            ButtonLabel(text, height, icon)
+        }
+    } else {
+        Button(
+            onClick = onClick,
+            shapes = ButtonDefaults.shapesFor(height),
+            modifier = modifier.heightIn(min = height),
+            enabled = enabled,
+            colors = if (tonal) ButtonDefaults.filledTonalButtonColors() else ButtonDefaults.buttonColors(),
+            contentPadding = ButtonDefaults.contentPaddingFor(height),
+            interactionSource = interactionSource,
+        ) {
+            ButtonLabel(text, height, icon)
+        }
     }
 }
 
@@ -247,7 +321,12 @@ fun Segments(modifier: Modifier = Modifier, content: @Composable ColumnScope.() 
 }
 
 @Composable
-fun SectionTitle(text: String, modifier: Modifier = Modifier, trailing: @Composable (RowScope.() -> Unit)? = null) {
+fun SectionTitle(
+    text: String,
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int? = null,
+    trailing: @Composable (RowScope.() -> Unit)? = null,
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -255,6 +334,16 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier, trailing: @Composa
             .padding(start = 16.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (icon != null) {
+            IconTile(
+                icon,
+                size = 32.dp,
+                shape = RoundedCornerShape(10.dp),
+                container = MaterialTheme.colorScheme.primaryContainer,
+                content = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            Spacer(Modifier.width(8.dp))
+        }
         Text(
             text,
             style = MaterialTheme.typography.titleSmallEmphasized,

@@ -110,6 +110,7 @@ private fun SheetTitle(text: String) {
 private fun MoreSheet(model: AppModel) {
     val newer = model.newVersion
     val rows = if (newer != null) 6 else 5
+    val colors = MaterialTheme.colorScheme
     var i = 0
     SheetBody {
         Segments {
@@ -117,35 +118,41 @@ private fun MoreSheet(model: AppModel) {
                 SegmentedListItem(
                     onClick = { model.openUrl(newer.url) },
                     shapes = ListItemDefaults.segmentedShapes(i++, rows),
-                    colors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                    leadingContent = { Glyph(R.drawable.ic_system_update) },
+                    colors = ListItemDefaults.segmentedColors(containerColor = colors.primaryContainer),
+                    leadingContent = {
+                        IconTile(
+                            R.drawable.ic_system_update,
+                            container = colors.surface.copy(alpha = 0.72f),
+                            content = colors.primary,
+                        )
+                    },
                 ) { Text("有新版本 ${newer.version}") }
             }
             SegmentedListItem(
                 onClick = model::openRestore,
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
-                leadingContent = { Glyph(R.drawable.ic_history) },
+                leadingContent = { IconTile(R.drawable.ic_history, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
             ) { Text("还原改动") }
             SegmentedListItem(
                 onClick = { model.openFeedback() },
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
-                leadingContent = { Glyph(R.drawable.ic_chat_bubble) },
+                leadingContent = { IconTile(R.drawable.ic_chat_bubble, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
             ) { Text("反馈问题") }
             SegmentedListItem(
                 onClick = { model.sheet = Sheet.Support },
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
-                leadingContent = { Glyph(R.drawable.ic_headset) },
+                leadingContent = { IconTile(R.drawable.ic_headset, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
             ) { Text("企业微信支持") }
             SegmentedListItem(
                 onClick = { model.openUrl(GUIDE_URL) },
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
-                leadingContent = { Glyph(R.drawable.ic_menu_book) },
+                leadingContent = { IconTile(R.drawable.ic_menu_book, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
                 trailingContent = { Glyph(R.drawable.ic_open_in_new) },
             ) { Text("使用说明") }
             SegmentedListItem(
                 onClick = { model.sheet = Sheet.About },
                 shapes = ListItemDefaults.segmentedShapes(i, rows),
-                leadingContent = { Glyph(R.drawable.ic_shield) },
+                leadingContent = { IconTile(R.drawable.ic_shield, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
             ) { Text("关于清静") }
         }
         Spacer(Modifier.height(16.dp))
@@ -232,30 +239,52 @@ private fun SupportSheet() {
 
 // ---------- 还原 ---------- //
 
+private data class RestoreItem(
+    val key: String,
+    val label: String,
+    val icon: Int,
+    val note: String,
+)
+
 private val RestoreItems = listOf(
-    Triple("quickapp", "恢复快应用", R.drawable.ic_bolt),
-    Triple("suspend", "恢复挂起的广告组件", R.drawable.ic_extension),
-    Triple("channels", "重新打开关掉的营销通知", R.drawable.ic_notifications_off),
+    RestoreItem("quickapp", "恢复快应用", R.drawable.ic_bolt, "重新启用被关闭的快应用组件"),
+    RestoreItem("suspend", "恢复挂起的广告组件", R.drawable.ic_extension, "重新启用被挂起的系统广告服务"),
+    RestoreItem("channels", "重新打开营销通知", R.drawable.ic_notifications_off, "恢复被关闭的营销通知渠道"),
 )
 
 @Composable
 private fun RestoreSheet(model: AppModel) {
+    val colors = MaterialTheme.colorScheme
     SheetBody {
         SheetTitle("还原改动")
+        Text(
+            "只恢复清静做过的改动，不影响系统更新和正常功能。",
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.onSurfaceVariant,
+            modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
+        )
         Segments {
-            RestoreItems.forEachIndexed { i, (what, label, icon) ->
+            RestoreItems.forEachIndexed { i, item ->
+                val tone = when (i) {
+                    0 -> colors.tertiaryContainer to colors.onTertiaryContainer
+                    1 -> colors.primaryContainer to colors.onPrimaryContainer
+                    else -> colors.secondaryContainer to colors.onSecondaryContainer
+                }
                 SegmentedListItem(
-                    onClick = { model.restore(what) },
+                    onClick = { model.restore(item.key) },
                     enabled = !model.restoring,
                     shapes = ListItemDefaults.segmentedShapes(i, RestoreItems.size),
-                    leadingContent = { Glyph(icon) },
-                ) { Text(label) }
+                    leadingContent = {
+                        IconTile(item.icon, container = tone.first, content = tone.second)
+                    },
+                    supportingContent = { Text(item.note) },
+                ) { Text(item.label) }
             }
         }
         Text(
             "App 里的开关要按手动清单打开。",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = colors.onSurfaceVariant,
             modifier = Modifier.padding(start = 8.dp, top = 12.dp),
         )
         AnimatedVisibility(model.restoring) {
@@ -268,18 +297,21 @@ private fun RestoreSheet(model: AppModel) {
         if (model.restoreResult.isNotEmpty()) {
             Surface(
                 shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                color = colors.surfaceContainerHigh,
                 modifier = Modifier.padding(top = 16.dp),
             ) {
-                Text(
-                    model.restoreResult,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 240.dp)
-                        .verticalScroll(rememberScrollState())
-                        .padding(16.dp),
-                )
+                Column(Modifier.padding(16.dp)) {
+                    Text("还原结果", style = MaterialTheme.typography.titleSmallEmphasized)
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        model.restoreResult,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 220.dp)
+                            .verticalScroll(rememberScrollState()),
+                    )
+                }
             }
         }
     }

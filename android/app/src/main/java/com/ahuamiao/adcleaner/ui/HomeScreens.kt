@@ -4,13 +4,15 @@ package com.ahuamiao.adcleaner.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -54,18 +56,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import com.ahuamiao.adcleaner.R
@@ -95,46 +97,73 @@ fun FailedScreen(reason: String) {
     }
 }
 
-private val HomeShapes by lazy {
-    listOf(
-        MaterialShapes.Cookie12Sided, MaterialShapes.Sunny, MaterialShapes.Clover8Leaf,
-        MaterialShapes.Flower, MaterialShapes.SoftBurst, MaterialShapes.Cookie9Sided,
+/** 首页主视觉：品牌渐变圆角徽标，替代原来的彩色多瓣形状。 */
+@Composable
+private fun BrandMark(size: Dp, onTap: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val shape = RoundedCornerShape(percent = 34)
+    val press = remember { MutableInteractionSource() }
+    val pressed by press.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.97f else 1f,
+        animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
+        label = "brand-mark-press",
     )
+    Box(
+        modifier = Modifier
+            .size(size)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .clip(shape)
+            .background(Brush.linearGradient(listOf(colors.primary, colors.secondary)))
+            .clickable(interactionSource = press, indication = null, onClick = onTap),
+        contentAlignment = Alignment.Center,
+    ) {
+        val ink = colors.onPrimary
+        Box(Modifier.fillMaxSize().border(1.dp, ink.copy(alpha = 0.22f), shape))
+        Box(Modifier.fillMaxSize().padding(size * 0.12f).border(1.dp, ink.copy(alpha = 0.12f), shape))
+        CompositionLocalProvider(LocalContentColor provides ink) {
+            Glyph(R.drawable.ic_ad_off, Modifier.size(size * 0.34f))
+        }
+    }
 }
 
 @Composable
 fun HomeScreen(model: AppModel) {
     val haptic = LocalHapticFeedback.current
     val colors = MaterialTheme.colorScheme
-    val press = remember { MutableInteractionSource() }
-    val pressed by press.collectIsPressedAsState()
-    var shapeAt by rememberSaveable { mutableIntStateOf(0) }
     val device = model.device
+    val actionHeight = ButtonDefaults.MediumContainerHeight
 
     HeroPage(
         topBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.primary.copy(alpha = .16f), MaterialTheme.colorScheme.surface.copy(alpha = .60f))), RoundedCornerShape(12.dp))
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(
                     painterResource(R.drawable.ic_aigoodbro_avatar),
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(start = 4.dp)
-                        .size(28.dp)
-                        .clip(RoundedCornerShape(8.dp)),
+                        .size(34.dp)
+                        .clip(RoundedCornerShape(10.dp)),
                 )
-                Text(
-                    "清静 · AiGoodBro",
-                    style = MaterialTheme.typography.titleMediumEmphasized,
+                Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 8.dp),
-                )
+                        .padding(start = 10.dp),
+                ) {
+                    Text("清静", style = MaterialTheme.typography.titleMediumEmphasized)
+                    Text(
+                        "AiGoodBro",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = colors.onSurfaceVariant,
+                    )
+                }
                 Box {
                     IconButton(onClick = { model.sheet = Sheet.More }, shapes = IconButtonDefaults.shapes()) {
                         Glyph(R.drawable.ic_more_horiz, label = "更多")
@@ -153,33 +182,24 @@ fun HomeScreen(model: AppModel) {
             }
         },
         middle = { maxWidth, maxHeight ->
-            val size = min(maxWidth * 0.72f, maxHeight - 112.dp)
+            val size = min(maxWidth * 0.50f, maxHeight - 168.dp).coerceAtLeast(112.dp)
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Hero(
-                    polygon = HomeShapes[shapeAt],
-                    color = colors.primaryContainer,
-                    modifier = Modifier.size(size),
-                    pressed = pressed,
+                BrandMark(
+                    size = size,
                     onTap = {
                         haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                        shapeAt = (shapeAt + 1) % HomeShapes.size
+                        model.sheet = Sheet.About
                     },
-                ) {
-                    Glyph(R.drawable.ic_ad_off, Modifier.size(size * 0.36f))
-                }
-                Spacer(Modifier.height(20.dp))
+                )
+                Spacer(Modifier.height(24.dp))
                 Text(
                     device?.title.orEmpty(),
-                    style = MaterialTheme.typography.headlineMediumEmphasized,
+                    style = MaterialTheme.typography.headlineSmallEmphasized,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                 )
-                Spacer(Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    ShapeBadge(MaterialShapes.Cookie4Sided, colors.tertiary, Modifier.size(10.dp)) {}
-                    Spacer(Modifier.width(8.dp))
-                    Text("已就绪", style = MaterialTheme.typography.labelLarge, color = colors.onSurfaceVariant)
-                }
+                Spacer(Modifier.height(10.dp))
+                StatusPill("已就绪", color = colors.secondary, contentColor = colors.onSecondaryContainer)
             }
         },
         actions = {
@@ -190,10 +210,10 @@ fun HomeScreen(model: AppModel) {
                     model.confirmSuperClean()
                 },
                 modifier = Modifier.fillMaxWidth(),
-                height = ctaHeight(),
-                interactionSource = press,
+                height = actionHeight,
+                icon = R.drawable.ic_bolt,
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
             SizedButton(
                 text = "手动选择去广告",
                 onClick = {
@@ -201,19 +221,20 @@ fun HomeScreen(model: AppModel) {
                     model.oneTap()
                 },
                 modifier = Modifier.fillMaxWidth(),
-                height = ctaHeight(),
-                interactionSource = press,
+                height = actionHeight,
+                icon = R.drawable.ic_shield,
                 tonal = true,
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
             SizedButton(
                 text = "还原",
                 onClick = model::openRestore,
                 modifier = Modifier.fillMaxWidth(),
+                height = actionHeight,
                 icon = R.drawable.ic_history,
-                tonal = true,
+                outlined = true,
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
         },
     )
 }
@@ -303,19 +324,14 @@ private fun SetupSteps(model: AppModel, at: Int, host: HostActions) {
 private fun SetupRow(index: Int, count: Int, step: SetupStep, done: Boolean, current: Boolean) {
     val colors = MaterialTheme.colorScheme
     val badgeColor = when {
-        done -> colors.tertiary
+        done -> colors.secondary
         current -> colors.primary
         else -> colors.surfaceContainerHigh
     }
     val badgeContent = when {
-        done -> colors.onTertiary
+        done -> colors.onSecondary
         current -> colors.onPrimary
         else -> colors.onSurfaceVariant
-    }
-    val polygon = when {
-        done -> MaterialShapes.Sunny
-        current -> MaterialShapes.Cookie7Sided
-        else -> MaterialShapes.Circle
     }
     SegmentedListItem(
         shapes = ListItemDefaults.segmentedShapes(index, count),
@@ -332,7 +348,7 @@ private fun SetupRow(index: Int, count: Int, step: SetupStep, done: Boolean, cur
         },
         verticalAlignment = Alignment.Top,
         leadingContent = {
-            ShapeBadge(polygon, badgeColor, Modifier.size(40.dp)) {
+            ShapeBadge(MaterialShapes.Circle, badgeColor, Modifier.size(40.dp)) {
                 CompositionLocalProvider(LocalContentColor provides badgeContent) {
                     // 完成瞬间：数字→对勾缩放+淡入，不硬切；步进时数字换号保持瞬时
                     val motion = MaterialTheme.motionScheme
@@ -402,7 +418,7 @@ private fun StatusScreen(state: String, host: HostActions) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Hero(MaterialShapes.Pentagon, colors.tertiaryContainer, Modifier.size(160.dp)) {
+            Hero(MaterialShapes.Circle, colors.primaryContainer, Modifier.size(160.dp)) {
                 Glyph(R.drawable.ic_shield, Modifier.size(64.dp))
             }
             Spacer(Modifier.height(32.dp))
