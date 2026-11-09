@@ -28,11 +28,11 @@ def rows(ver, guide):
     items = [i for i in ITEM.findall(html) if ver in i[4]]
     for item in items:
         kind_of(item[0])
-    lines = [f"肉呆去广告 v{ver}", "", "选哪个文件："]
+    lines = [f"清静 · AiGoodBro v{ver}", "", "选哪个文件："]
     lines += [f"· {title}（{sub}）：{folder}/{file}。{note}" for _, folder, title, sub, file, note in items]
     lines += ["", "不知道 Mac 是哪种芯片：左上角苹果图标 → 关于本机，「芯片」写 Apple M 开头的选 Apple 芯片。",
               f"SHA256SUMS.txt 是 {len(items)} 个文件的 SHA256 校验值。",
-              "用法、常见问题、反馈：https://github.com/rddmwmddr/android-ad-cleaner"]
+              "用法、常见问题、反馈：https://github.com/Tri250/AlcedoStudio"]
     with open(guide, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     for item in items:
@@ -59,7 +59,7 @@ def write(stream):
 INTRO = ("关掉国产安卓手机系统里的广告、热搜、资讯推荐和营销推送。\n"
          "不 root，不刷机，系统更新不受影响，每一项能还原。不需要 Python，也不需要 AI 工具。\n")
 SETUP = {
-    "mac": ["双击 {file}，把「肉呆去广告」拖进「应用程序」文件夹。",
+    "mac": ["双击 {file}，把「清静 · AiGoodBro」拖进「应用程序」文件夹。",
             "在「应用程序」里双击打开。安装包有苹果公证。"],
     "win-setup": ["双击 {file}，按提示安装。",
                   "弹出「Windows 已保护你的电脑」：点「更多信息」→「仍要运行」（安装程序没有代码签名）。",
@@ -93,7 +93,7 @@ def legacy(ver, out, sums_path):
     sums = {name.strip().lstrip("*"): digest for name, digest in sums.items()}
     folders = [f"{folder:<18}{title}（{sub}）" for _, folder, title, sub, _, _ in items]
     with open(os.path.join(out, "先看我-选哪个文件夹.txt"), "w", encoding="utf-8") as f:
-        f.write(f"肉呆去广告 {ver}\n{INTRO}\n选哪个文件夹\n------------\n" + "\n".join(folders) +
+        f.write(f"清静 · AiGoodBro {ver}\n{INTRO}\n选哪个文件夹\n------------\n" + "\n".join(folders) +
                 "\n\n不知道 Mac 是哪种芯片：点屏幕左上角的苹果图标 → 关于本机，\n"
                 "「芯片」一栏写 Apple M 开头的选 Mac-Apple芯片，写 Intel 的选 Mac-Intel芯片。\n\n"
                 "每个文件夹里有安装包和这个版本的安装说明。旧版本在官网和 GitHub 的「全部版本」里。\n")
@@ -105,10 +105,10 @@ def legacy(ver, out, sums_path):
         os.makedirs(os.path.join(out, folder), exist_ok=True)
         steps = "\n".join(f"{n}. {line.format(file=file)}" for n, line in enumerate(SETUP[kind], 1))
         with open(os.path.join(out, folder, "安装说明.txt"), "w", encoding="utf-8") as f:
-            f.write(f"肉呆去广告 {ver}\n{INTRO}\n适用：{title}（{sub}）。\n\n安装\n----\n{steps}\n\n"
+            f.write(f"清静 · AiGoodBro {ver}\n{INTRO}\n适用：{title}（{sub}）。\n\n安装\n----\n{steps}\n\n"
                     + (USAGE_ANDROID if kind == "android" else USAGE) +
                     "更多\n----\n官网：https://ahuamiao.com/sites/other/android-ad-removal-intro.html\n"
-                    "源代码：https://github.com/rddmwmddr/android-ad-cleaner\n"
+                    "源代码：https://github.com/Tri250/AlcedoStudio\n"
                     + ("遇到问题：App 右上角「⋯」→「反馈问题」\n\n" if kind == "android"
                        else "遇到问题：客户端左下角「反馈问题」或「上报错误日志」\n\n") +
                     f"校验\n----\nSHA-256：{digest}\n验证方法：{CHECK[kind]}\n")
