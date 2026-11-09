@@ -14,7 +14,7 @@ except ImportError:
     import winpreflight
 
 APP_NAME = "清静 · AiGoodBro"
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 FROZEN = getattr(sys, "frozen", False)
 BASE = getattr(sys, "_MEIPASS", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TOOL = os.path.join(BASE, "tool")
