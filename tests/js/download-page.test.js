@@ -14,10 +14,10 @@ const ANDROID = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KH
 const ANDROID_FIREFOX = "Mozilla/5.0 (Android 14; Mobile; rv:126.0) Gecko/126.0 Firefox/126.0";
 const WIN = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
 
-const APK = (sub) => `    { id: "android", folder: "安卓手机", baidu: { url: "", code: "" }, title: "安卓手机 · 手机版", sub: "${sub}", file: "Qingjing-AiGoodBro-1.0.4-android-arm64.apk", size: "50 MB",
+const APK = (sub) => `    { id: "android", folder: "安卓手机", baidu: { url: "", code: "" }, title: "安卓手机 · 手机版", sub: "${sub}", file: "AiClean-1.0.5-android-arm64.apk", size: "50 MB",
       note: "不用连电脑", sha: "2" },
 `;
-const ENTRY = (id) => `    { id: "${id}", folder: "x", baidu: { url: "", code: "" }, title: "x · x", sub: "x", file: "Qingjing-AiGoodBro-1.0.4-${id}", size: "1 MB",
+const ENTRY = (id) => `    { id: "${id}", folder: "x", baidu: { url: "", code: "" }, title: "x · x", sub: "x", file: "AiClean-1.0.5-${id}", size: "1 MB",
       note: "x", sha: "3" },
 `;
 
@@ -185,7 +185,7 @@ test("Windows 用户的首屏高亮指向免安装版，国内按钮保持原样
 test("手机上首屏的 GitHub 按钮指向 APK", () => {
   const page = open({ userAgent: ANDROID, platform: "" });
   try {
-    assert.match(page.heroGh(), /Qingjing-AiGoodBro-[\w.-]+-android-arm64\.apk$/);
+    assert.match(page.heroGh(), /AiClean-[\w.-]+-android-arm64\.apk$/);
     assert.ok(!page.heroCn().includes("gitee.com"), "gitee 没配时不该出现 gitee 链接");
   } finally { page.close(); }
 });
@@ -221,7 +221,7 @@ test("网盘链接填回时，国内下载指向百度网盘并带提取码", ()
 test("国内下载的路径与页首写的版本号是同一个", () => {
   const page = open({
     apk: false,
-    transform: (html) => html.replace('gitee: "",', 'gitee: "https://gitee.com/Tri250/AlcedoStudio/releases/download/v1.0.4/",'),
+    transform: (html) => html.replace('gitee: "",', 'gitee: "https://gitee.com/Tri250/AlcedoStudio/releases/download/v1.0.5/",'),
   });
   try {
     const version = page.hero().match(/^v([\w.-]+)/)[1];
@@ -232,7 +232,7 @@ test("国内下载的路径与页首写的版本号是同一个", () => {
 
 test("退路：gitee 配好后国内下载回到 Gitee，dl-after 出现 Gitee 全部版本", () => {
   const page = open({
-    transform: (html) => html.replace('gitee: "",', 'gitee: "https://gitee.com/Tri250/AlcedoStudio/releases/download/v1.0.4/",'),
+    transform: (html) => html.replace('gitee: "",', 'gitee: "https://gitee.com/Tri250/AlcedoStudio/releases/download/v1.0.5/",'),
   });
   try {
     assert.match(page.button(page.card("免安装"), "国内下载").href, /gitee\.com.*windows-portable\.zip$/);

@@ -1,6 +1,6 @@
 # 手机版使用教程
 
-这份教程手把手讲「清静 · AiGoodBro」手机版（APK）怎么用。第一次用要在手机上做 3 个设置，大约 1 分钟；做完以后，打开 App 点「一键去广告」就行。
+这份教程手把手讲「Ai.Clean」手机版（APK）怎么用。第一次用要在手机上做 3 个设置，大约 1 分钟；做完以后，打开 App 点「一键去广告」就行。
 
 全程不需要 root，不用连电脑，不经过任何服务器。
 
@@ -14,7 +14,7 @@
 
 ## 下载
 
-从[官网下载区](https://ahuamiao.com/sites/other/android-ad-removal-intro.html#download)下载，也可以从 [GitHub](https://github.com/Tri250/AlcedoStudio/releases/latest) 下载。文件名是 `Qingjing-AiGoodBro-<版本>-android-arm64.apk`。下载好后，往下做那 3 个设置。
+从[官网下载区](https://ahuamiao.com/sites/other/android-ad-removal-intro.html#download)下载，也可以从 [GitHub](https://github.com/Tri250/AlcedoStudio/releases/latest) 下载。文件名是 `AiClean-<版本>-android-arm64.apk`。下载好后，往下做那 3 个设置。
 
 ## 开始之前
 
@@ -28,7 +28,7 @@
 
 ## 第 1 步：打开开发者选项
 
-打开「清静」，首页写着「先做 3 个设置」。点最下面的蓝色按钮「打开『关于手机』」。
+打开「Ai.Clean」，首页写着「先做 3 个设置」。点最下面的蓝色按钮「打开『关于手机』」。
 
 <img src="img/01.jpg" width="300" alt="App 首页第 1 步，红圈在「打开『关于手机』」按钮">
 
@@ -59,7 +59,7 @@
 
 ## 第 2 步：打开无线调试
 
-回到「清静」，它会自己进到第 2 步，第 1 步打上勾。点「打开开发者选项」。
+回到「Ai.Clean」，它会自己进到第 2 步，第 1 步打上勾。点「打开开发者选项」。
 
 <img src="img/05.jpg" width="300" alt="App 第 2 步，红圈在「打开开发者选项」">
 
@@ -119,7 +119,7 @@ App 先检测手机型号和系统、扫描营销通知，做完一件勾一件�
 
 <img src="img/20.jpg" width="300" alt="确认关闭哪些，红圈在开始">
 
-然后在一块看不见的「后台屏」上逐项关闭。这时可以照常用手机，开别的 App 也行；屏幕左边有一个蓝色小条「清静 · AiGoodBro（后台）」，说明还在进行。不支持后台屏的手机会借用当前屏幕，那时页面会写「请不要碰手机」。
+然后在一块看不见的「后台屏」上逐项关闭。这时可以照常用手机，开别的 App 也行；屏幕左边有一个蓝色小条「Ai.Clean（后台）」，说明还在进行。不支持后台屏的手机会借用当前屏幕，那时页面会写「请不要碰手机」。
 
 <img src="img/18.jpg" width="300" alt="执行页：在后台屏上逐项关闭"> <img src="img/21.jpg" width="300" alt="开着别的 App，屏幕左边的蓝色小条说明还在后台做">
 

@@ -162,7 +162,7 @@ private fun MoreSheet(model: AppModel) {
                 shapes = ListItemDefaults.segmentedShapes(i, rows),
                 colors = cardRowColors(),
                 leadingContent = { IconTile(R.drawable.ic_shield, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
-            ) { Text("关于清静") }
+            ) { Text("关于 Ai.Clean") }
         }
         Spacer(Modifier.height(16.dp))
         Text(
@@ -179,7 +179,7 @@ private fun MoreSheet(model: AppModel) {
 @Composable
 private fun AboutSheet(model: AppModel) {
     SheetBody(Modifier.verticalScroll(rememberScrollState())) {
-        SheetTitle("清静 · AiGoodBro")
+        SheetTitle("Ai.Clean")
         Text("版本 ${model.version} · 安卓版", style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(12.dp))
         Text(
@@ -282,7 +282,7 @@ private fun RestoreSheet(model: AppModel) {
     SheetBody {
         SheetTitle("还原改动")
         Text(
-            "只恢复清静做过的改动，不影响系统更新和正常功能。",
+            "只恢复 Ai.Clean 做过的改动，不影响系统更新和正常功能。",
             style = MaterialTheme.typography.bodyMedium,
             color = colors.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 12.dp),

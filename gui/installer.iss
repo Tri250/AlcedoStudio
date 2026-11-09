@@ -4,15 +4,15 @@
 #endif
 [Setup]
 AppId={{9B651DD2-1ED7-4858-8144-D7DB4C623510}
-AppName=清静 · AiGoodBro
+AppName=Ai.Clean
 AppVersion={#APPVER}
-AppPublisher=AiGoodBro
+AppPublisher=Ai.Clean
 AppPublisherURL=https://github.com/Tri250/AlcedoStudio
 DefaultDirName={autopf}\QingjingAiGoodBro
-DefaultGroupName=清静 · AiGoodBro
+DefaultGroupName=Ai.Clean
 DisableProgramGroupPage=yes
 OutputDir=dist
-OutputBaseFilename=Qingjing-AiGoodBro-{#APPVER}-windows-setup
+OutputBaseFilename=AiClean-{#APPVER}-windows-setup
 SetupIconFile=icon.ico
 UninstallDisplayIcon={app}\AndroidAdCleaner.exe
 Compression=lzma2
@@ -36,8 +36,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "dist\AndroidAdCleaner\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\清静 · AiGoodBro"; Filename: "{app}\AndroidAdCleaner.exe"
-Name: "{autodesktop}\清静 · AiGoodBro"; Filename: "{app}\AndroidAdCleaner.exe"; Tasks: desktopicon
+Name: "{group}\Ai.Clean"; Filename: "{app}\AndroidAdCleaner.exe"
+Name: "{autodesktop}\Ai.Clean"; Filename: "{app}\AndroidAdCleaner.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\AndroidAdCleaner.exe"; Description: "{cm:LaunchProgram,清静 · AiGoodBro}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\AndroidAdCleaner.exe"; Description: "{cm:LaunchProgram,Ai.Clean}"; Flags: nowait postinstall skipifsilent

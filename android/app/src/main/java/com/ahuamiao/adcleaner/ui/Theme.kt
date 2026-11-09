@@ -75,7 +75,7 @@ fun AacTheme(content: @Composable () -> Unit) {
     val colors = if (dark) darkColorScheme(
         primary = Color(0xFFAFC6FF), onPrimary = Color(0xFF002C77),
         primaryContainer = Color(0xFF1A44A8), onPrimaryContainer = Color(0xFFE6EDFF),
-        // 品牌第二色：清静的薄荷绿，只用在「已就绪 / 成功」和次级操作上
+        // 品牌第二色：Ai.Clean 的薄荷绿，只用在「已就绪 / 成功」和次级操作上
         secondary = Color(0xFF63E0C6), onSecondary = Color(0xFF00382F),
         secondaryContainer = Color(0xFF0F4F46), onSecondaryContainer = Color(0xFFC9F6EC),
         tertiary = Color(0xFFFFC85C), onTertiary = Color(0xFF3D2A00),

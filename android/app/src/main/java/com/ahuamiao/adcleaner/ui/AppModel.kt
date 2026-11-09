@@ -229,7 +229,7 @@ class AppModel(
 
     /** 一键：检测、扫描连着做完，停在确认页（勾选是默认值），用户点「开始」才执行。 */
     fun oneTap() = flow {
-        // 设备信息还没查到时点了「超级清静」：不能静默没反应，回首页让刷新接着认设备
+        // 设备信息还没查到时点了「超级 Ai.Clean」：不能静默没反应，回首页让刷新接着认设备
         val serial = device?.serial ?: return@flow goHome()
         show(Screen.Prepare(0))
         val selection = detect(serial) ?: return@flow goHome()
@@ -246,14 +246,14 @@ class AppModel(
     /** 用户先确认范围，之后只自动选引擎已判定安全的项目。 */
     fun confirmSuperClean() {
         notice = Notice(
-            "超级清静",
+            "超级 Ai.Clean",
             "将检测并关闭支持的广告和推荐开关、明确的营销通知，挂起已识别的广告组件并关闭可处理的快应用。快应用可能影响你常用的入口；系统服务保留项不会挂起。开始前会保存快照，改动可从「还原」恢复。仅自动运行机型和系统版本均匹配的脚本。",
-            confirm = "开始超级清静", onConfirm = { superClean() }, dismiss = "取消",
+            confirm = "开始超级 Ai.Clean", onConfirm = { superClean() }, dismiss = "取消",
         )
     }
 
     private fun superClean() = flow {
-        // 设备信息还没查到就确认了：回首页刷新，别让「开始超级清静」无声无息
+        // 设备信息还没查到就确认了：回首页刷新，别让「开始超级 Ai.Clean」无声无息
         val serial = device?.serial ?: return@flow goHome()
         show(Screen.Prepare(0))
         val selected = detect(serial) ?: return@flow goHome()
@@ -272,7 +272,7 @@ class AppModel(
         if (error != null) {
             if (runCatching { poll(0).running }.getOrDefault(false)) return@flow follow()
             goHome()
-            notice = Notice("无法开始超级清静", error)
+            notice = Notice("无法开始超级 Ai.Clean", error)
             return@flow
         }
         userRun = true

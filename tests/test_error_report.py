@@ -95,10 +95,10 @@ class ReportTests(unittest.TestCase):
             info = self.api.about()
         self.assertNotIn("upstream_author", info)
         self.assertNotIn("upstream_url", info)
-        self.assertIn("AiGoodBro", info["author"])
+        self.assertIn("Ai.Clean", info["author"])
         self.assertEqual(info["license"], (ROOT / "LICENSE").read_text(encoding="utf-8"))
         self.assertEqual(info["project_url"], "https://github.com/Tri250/AlcedoStudio")
-        self.assertEqual(info["ui_license"], (ROOT / "licenses/AiGoodBro-UI-MIT.txt").read_text(encoding="utf-8"))
+        self.assertEqual(info["ui_license"], (ROOT / "licenses/AiClean-UI-MIT.txt").read_text(encoding="utf-8"))
         network.assert_not_called()
 
 
