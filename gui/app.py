@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""清静 · AiGoodBro · 桌面客户端（macOS / Windows）。
+"""Ai.Clean · 桌面客户端（macOS / Windows）。
 
 界面：gui/web/index.html（pywebview 窗口）
 后台：tool/run.py、tool/fast.py、tool/chan_fast.py，以子进程运行，日志实时回传界面。
@@ -13,8 +13,8 @@ try:                                # 当包导入（测试）；直接跑脚本
 except ImportError:
     import winpreflight
 
-APP_NAME = "清静 · AiGoodBro"
-VERSION = "1.0.4"
+APP_NAME = "Ai.Clean"
+VERSION = "1.0.5"
 FROZEN = getattr(sys, "frozen", False)
 BASE = getattr(sys, "_MEIPASS", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TOOL = os.path.join(BASE, "tool")
@@ -1184,11 +1184,11 @@ class Api:
             license_text = license_file.read_text(encoding="utf-8")
         except OSError:
             license_text = "未找到随附的 MIT 许可文件，请查看本项目源码中的 LICENSE。"
-        return {"name": APP_NAME, "version": VERSION, "build": "1109v2",
-                "author": "AiGoodBro",
+        return {"name": APP_NAME, "version": VERSION, "build": "1109v3",
+                "author": "Ai.Clean",
                 "project_url": "https://github.com/Tri250/AlcedoStudio",
                 "license": license_text,
-                "ui_license": Path(BASE, "licenses", "AiGoodBro-UI-MIT.txt").read_text(encoding="utf-8")}
+                "ui_license": Path(BASE, "licenses", "AiClean-UI-MIT.txt").read_text(encoding="utf-8")}
 
     def latest_version(self):
         """有新版时返回 {version, url}，没有或查不到返回 {}。旧版不会自动更新：0.2.6 发布后，

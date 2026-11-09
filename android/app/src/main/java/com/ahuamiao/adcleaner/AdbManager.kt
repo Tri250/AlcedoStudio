@@ -58,7 +58,7 @@ class AdbManager private constructor(context: Context) : AbsAdbConnectionManager
             val algorithm = "SHA512withRSA"
             val notBefore = Date()
             val notAfter = Date(System.currentTimeMillis() + 100L * 365 * 86400_000L)
-            val name = X500Name("CN=AndroidAdCleaner")
+            val name = X500Name("CN=Ai.Clean")
             val extensions = CertificateExtensions().apply {
                 set("SubjectKeyIdentifier", SubjectKeyIdentifierExtension(KeyIdentifier(pair.public).identifier))
                 set("PrivateKeyUsage", PrivateKeyUsageExtension(notBefore, notAfter))
@@ -82,7 +82,7 @@ class AdbManager private constructor(context: Context) : AbsAdbConnectionManager
 
     override fun getPrivateKey(): PrivateKey = privateKey
     override fun getCertificate(): Certificate = certificate
-    override fun getDeviceName(): String = "清静 · AiGoodBro"
+    override fun getDeviceName(): String = "Ai.Clean"
 
     companion object {
         @Volatile private var instance: AdbManager? = null

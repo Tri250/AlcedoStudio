@@ -23,7 +23,7 @@ USAGE = """\
   aac-cli --cli run.py devices              列出已连接的手机
   aac-cli --cli run.py -s <序列号> check     检测指定手机
 
-要打开窗口请运行 清静 · AiGoodBro。
+要打开窗口请运行 Ai.Clean。
 """
 
 
@@ -83,8 +83,7 @@ def smoke_gui(window, result):
                 while time.monotonic() < about_deadline:
                     about_ok = window.evaluate_js("""(() => {
                         const box = document.querySelector('#modalbox');
-                        return box && box.textContent.includes('AiGoodBro') &&
-                            box.textContent.includes('清静') &&
+                        return box && box.textContent.includes('Ai.Clean') &&
                             box.textContent.includes('Permission is hereby granted');
                     })()""")
                     if about_ok:

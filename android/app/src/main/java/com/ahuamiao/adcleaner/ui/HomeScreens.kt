@@ -127,7 +127,7 @@ private fun BrandMark(size: Dp, onTap: () -> Unit) {
             }
             .clip(shape)
             .background(Brush.linearGradient(listOf(colors.primary, colors.secondary)))
-            .semantics { contentDescription = "关于清静" }
+            .semantics { contentDescription = "关于 Ai.Clean" }
             .clickable(interactionSource = press, indication = null, onClick = onTap),
         contentAlignment = Alignment.Center,
     ) {
@@ -156,7 +156,7 @@ fun HomeScreen(model: AppModel) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(
-                    painterResource(R.drawable.ic_aigoodbro_avatar),
+                    painterResource(R.drawable.ic_aiclean_avatar),
                     contentDescription = null,
                     modifier = Modifier
                         .size(36.dp)
@@ -167,12 +167,7 @@ fun HomeScreen(model: AppModel) {
                         .weight(1f)
                         .padding(start = 12.dp),
                 ) {
-                    Text("清静", style = MaterialTheme.typography.titleMediumEmphasized)
-                    Text(
-                        "AiGoodBro",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = colors.onSurfaceVariant,
-                    )
+                    Text("Ai.Clean", style = MaterialTheme.typography.titleMediumEmphasized)
                 }
                 Box {
                     IconButton(onClick = { model.sheet = Sheet.More }, shapes = IconButtonDefaults.shapes()) {
@@ -219,7 +214,7 @@ fun HomeScreen(model: AppModel) {
         },
         actions = {
             SizedButton(
-                text = "超级清静",
+                text = "超级 Ai.Clean",
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.Confirm)
                     model.confirmSuperClean()
@@ -435,7 +430,7 @@ private fun statusCopy(state: String) = when (state) {
     "old" -> StatusCopy("安卓版本太低", "安卓 11 以下没有无线调试，要装 Shizuku，按它的说明连一次电脑启动。", "打开 Shizuku") { it.openShizuku() }
     "stopped" -> StatusCopy("Shizuku 还没启动", "打开 Shizuku 按说明启动。手机重启后要再启动一次。", "打开 Shizuku") { it.openShizuku() }
     "ask" -> StatusCopy("允许本 App 使用 Shizuku", "点下面的按钮，在弹窗里选「始终允许」。", "授权") { it.requestShizuku() }
-    "denied" -> StatusCopy("之前拒绝了 Shizuku 授权", "打开 Shizuku →「已授权的应用」，打开「清静 · AiGoodBro」，再回到这里。", "打开 Shizuku") { it.openShizuku() }
+    "denied" -> StatusCopy("之前拒绝了 Shizuku 授权", "打开 Shizuku →「已授权的应用」，打开「Ai.Clean」，再回到这里。", "打开 Shizuku") { it.openShizuku() }
     else -> StatusCopy("读不到这台手机", "到「开发者选项」把「无线调试」关掉再打开，然后回到这里。", "打开开发者选项") { it.openSettings("dev") }
 }
 

@@ -211,7 +211,7 @@ class PairingService : Service() {
         runCatching { projection?.stop() }; projection = null     // 留成 null，下一次启动才知道没有会话在跑
         if (::looper.isInitialized) looper.quitSafely()
         stopForeground(STOP_FOREGROUND_REMOVE)
-        if (done != null) Pairing.notify(this, done, "点这里回到「清静 · AiGoodBro」开始去广告")
+        if (done != null) Pairing.notify(this, done, "点这里回到「Ai.Clean」开始去广告")
         MainActivity.refreshState()
         stopSelf()
     }

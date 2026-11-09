@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>清静 · AiGoodBro</title>
+<title>Ai.Clean</title>
 <style>
 :root{
   --bg:#F4F5F9; --panel:rgba(255,255,255,.40); --side:rgba(255,255,255,.26); --text:#202127; --sub:rgba(0,0,0,.66); --line:rgba(0,0,0,.05);
@@ -18,7 +18,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
   font:13px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;}
-/* AiGoodBro WorkspaceGlass palette and metric adaptation. The execution flow stays unchanged. */
+/* Ai.Clean WorkspaceGlass palette and metric adaptation. The execution flow stays unchanged. */
 .app{display:grid;grid-template-columns:196px minmax(0,1fr);height:100vh;background:radial-gradient(ellipse 85% 70% at 0 0,var(--glass-blue),transparent 75%),radial-gradient(ellipse 65% 65% at 100% 100%,var(--glass-purple),transparent 75%)}
 aside{background:var(--side);border-right:1px solid var(--line);padding:22px 12px 14px;display:flex;flex-direction:column;gap:6px;min-height:0;overflow:auto}
 .brand{font-weight:600;font-size:17px;padding:0 8px 24px;display:flex;align-items:center;gap:10px;white-space:nowrap}
@@ -136,7 +136,7 @@ html:has(.app:target), html:has(.app:target) body{background:transparent}
 <body>
 <div class="app" id="app-glass">
   <aside>
-    <div class="brand"><img src="img/logo.png" alt=""><span class="brand-copy">清静<small>AiGoodBro</small></span></div>
+    <div class="brand"><img src="img/logo.png" alt=""><span class="brand-copy">Ai.Clean</span></div>
     <div class="step" data-s="1"><b>1</b>连接手机</div>
     <div class="step" data-s="2"><b>2</b>检测</div>
     <div class="step" data-s="3"><b>3</b>选择要关的</div>
@@ -149,7 +149,7 @@ html:has(.app:target), html:has(.app:target) body{background:transparent}
       <button class="link" onclick="openFeedback()"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3.5h14V14H8l-4 3v-3H3zM6 7h8M6 10h5"/></svg>反馈问题</button>
       <button class="link" onclick="api.open_url('https://github.com/Tri250/AlcedoStudio/blob/main/docs/' + encodeURIComponent('手机版教程') + '/brand-taps.json')"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3.5h5.5L10 5l1.5-1.5H17v12h-5.5L10 17l-1.5-1.5H3zM10 5v12"/></svg>使用说明</button>
       <button class="link" onclick="openSupport()"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14v10H8l-4 3v-3H3zM6 7h3M6 10h6"/><path d="M13 6.5v3M11.5 8H14.5"/></svg>开发者支持</button>
-      <button class="link" onclick="openAbout()"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 9v5M10 6.2v.1"/></svg>关于清静</button>
+      <button class="link" onclick="openAbout()"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 9v5M10 6.2v.1"/></svg>关于 Ai.Clean</button>
       <button class="link newver hide" id="newver"></button>
       <div class="ver" id="ver"></div>
     </div>
@@ -200,7 +200,7 @@ let pollDev = null;
 function showConnect(){
   setStep(1); clearInterval(pollDev);
   main().innerHTML = `
-    <h1>让手机清静一点</h1>
+    <h1>让手机安静一点</h1>
     <p class="lead">用数据线把手机连到这台电脑。手机要打开开发者模式和 USB 调试。</p>
     <div class="note info"><b>设备支持范围</b>：支持通过 adb 连接的安卓设备。使用 HDC 的华为原生鸿蒙暂不支持；升级客户端也不会获得鸿蒙适配。荣耀 MagicOS 属于另一种情况，可先连接检测，没有本型号脚本时可自选同品牌参考脚本。</div>
     <div class="card"><h3>关掉这些打扰，保留正常功能</h3><p class="lead" style="margin:0">系统广告与跟踪 · 热搜资讯 · 商店推广 · 营销通知 · 快应用跳转</p><p class="lead" style="margin:8px 0 0;font-size:12px">先检测，再选择，确认后执行。具体项目以机型适配为准；第三方 App 自带的开屏广告不在范围内。</p></div>
@@ -300,7 +300,7 @@ async function showDetect(){
     ${st.recipe && !st.recipe_ref && !st.recipe_ok ? `<div class="note warn" style="margin-top:14px">机型脚本是按 ${esc(st.recipe_build)} 录的，这台是 ${esc(i.os || i.build)}。会用安全模式跑：只关脚本里点名的开关，找不到入口的步骤跳过，不会乱点。</div>` : ""}
     <div class="actions"><button class="btn plain" onclick="showConnect()">换一台</button><button class="btn plain" onclick="showDetect()">重新检测</button>
     <button class="btn ghost" ${st.locked || foldBlock || st.input_blocked ? "disabled" : ""} onclick="showChoose()">手动选择</button>
-    <button class="btn" ${st.locked || foldBlock || st.input_blocked ? "disabled" : ""} onclick="askSuperClean()">超级清静</button></div>`;
+    <button class="btn" ${st.locked || foldBlock || st.input_blocked ? "disabled" : ""} onclick="askSuperClean()">超级 Ai.Clean</button></div>`;
 }
 
 const CHECKLIST = {OPPO: "OPPO-ColorOS.md", ONEPLUS: "OPPO-ColorOS.md", REALME: "OPPO-ColorOS.md", HONOR: "荣耀-MagicOS.md",
@@ -403,7 +403,7 @@ async function go(){
   S.plan = plan; S.logNext = 0; S.cleanupRun = {eligible: true, opened: false}; showRun();
 }
 function askSuperClean(){
-  modal(`<h3>开始超级清静？</h3><p class="lead">自动处理已适配的广告开关、明确的营销通知、可关闭的快应用和已识别的广告组件。开始前会备份，服务通知和受保护的组件会保留。</p><div class="actions"><button class="btn plain" onclick="closeModal()">取消</button><button class="btn" onclick="runSuperClean()">开始清理</button></div>`);
+  modal(`<h3>开始超级 Ai.Clean？</h3><p class="lead">自动处理已适配的广告开关、明确的营销通知、可关闭的快应用和已识别的广告组件。开始前会备份，服务通知和受保护的组件会保留。</p><div class="actions"><button class="btn plain" onclick="closeModal()">取消</button><button class="btn" onclick="runSuperClean()">开始清理</button></div>`);
 }
 async function runSuperClean(){
   modal(`<h3>正在检测并扫描…</h3><p class="lead">开始执行后，可以在进度页停止清理。</p>`);
@@ -603,10 +603,10 @@ function copyDouyin(btn){
 async function openAbout(){
   const a = await api.about();
   modal(`<h3>${esc(a.name)}</h3><p class="lead">版本 ${esc(a.version)} · ${esc(a.build)}<br>品牌适配与维护：${esc(a.author)}</p>
-    <p class="lead">清静 · AiGoodBro 致力于把安卓手机里的广告、推荐和营销推送关干净，改动前逐项确认，随时一键还原。</p>
+    <p class="lead">Ai.Clean 致力于把安卓手机里的广告、推荐和营销推送关干净，改动前逐项确认，随时一键还原。</p>
     <div class="actions"><button class="btn ghost" onclick="api.open_url('${esc(a.project_url)}')">项目主页</button></div>
     <details style="margin-top:18px"><summary>MIT 开源许可</summary><pre class="report">${esc(a.license)}</pre></details>
-    ${a.ui_license ? `<details style="margin-top:12px"><summary>AiGoodBro UI 开源许可</summary><pre class="report">${esc(a.ui_license)}</pre></details>` : ""}
+    ${a.ui_license ? `<details style="margin-top:12px"><summary>Ai.Clean UI 开源许可</summary><pre class="report">${esc(a.ui_license)}</pre></details>` : ""}
     <div class="row" style="margin-top:16px"><button class="btn ghost" onclick="api.open_url('https://aigoodbro.com')"><span aria-hidden="true">🎁</span> 点击有惊喜 · aigoodbro.com</button></div>
     <div class="actions"><button class="btn plain" onclick="openSupport()">开发者支持</button><button class="btn" onclick="closeModal()">关闭</button></div>`, true);
 }

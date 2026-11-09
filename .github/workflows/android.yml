@@ -64,7 +64,7 @@ jobs:
           esac
           echo "REL=$REL" >> "$GITHUB_ENV"
           mkdir -p delivery
-          cp "$QINGJING_ANDROID_BUILD_DIR/outputs/apk/release/app-release.apk" "delivery/Qingjing-AiGoodBro-$REL-android-arm64.apk"
+          cp "$QINGJING_ANDROID_BUILD_DIR/outputs/apk/release/app-release.apk" "delivery/AiClean-$REL-android-arm64.apk"
           "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --verbose --print-certs delivery/*.apk
           "$ANDROID_HOME/build-tools/37.0.0/aapt" dump badging delivery/*.apk | tee delivery/android-package-info.txt
           grep -q "package: name='com.aigoodbro.qingjing'" delivery/android-package-info.txt
@@ -72,7 +72,7 @@ jobs:
           sha256sum *.apk > SHA256SUMS-android.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Qingjing-AiGoodBro-android-${{ env.REL }}
+          name: AiClean-android-${{ env.REL }}
           path: delivery/
           if-no-files-found: error
       - name: Publish release
@@ -83,9 +83,9 @@ jobs:
           # build-windows 工作流也在同一标签上建 Release，谁先跑完谁建，后到的只补产物
           gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || \
             gh release create "${GITHUB_REF_NAME}" \
-              --title "清静 · AiGoodBro ${GITHUB_REF_NAME}" \
+              --title "Ai.Clean ${GITHUB_REF_NAME}" \
               --generate-notes
           gh release upload "${GITHUB_REF_NAME}" --clobber \
-            "delivery/Qingjing-AiGoodBro-${REL}-android-arm64.apk" \
+            "delivery/AiClean-${REL}-android-arm64.apk" \
             delivery/SHA256SUMS-android.txt \
             delivery/android-package-info.txt

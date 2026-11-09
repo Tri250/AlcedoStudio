@@ -79,7 +79,7 @@ val syncEngine by tasks.registering(Sync::class) {
     from(repo.resolve("recipes")) { into("recipes"); include("*/recipe*.py"); exclude("zztest-*/**") }
     from(repo.resolve("gui")) { into("gui"); include("app.py", "winpreflight.py", "version.py", "web/chime.wav") }
     from(repo.resolve("LICENSE")) { into("legal") }
-    from(repo.resolve("licenses/AiGoodBro-UI-MIT.txt")) { into("legal") }
+    from(repo.resolve("licenses/AiClean-UI-MIT.txt")) { into("legal") }
     from(repo.resolve("docs/手机版教程")) { into("docs"); include("brand-taps.json") }   // 首次设置按品牌说路径
 }
 tasks.named("preBuild") { dependsOn(syncEngine) }

@@ -1,10 +1,10 @@
-# 清静 · AiGoodBro
+# Ai.Clean
 
 帮助关闭安卓手机里有开关的系统广告、推荐内容、营销通知，以及支持的快应用跳转和广告组件。先检测、再选择，确认后执行，保留备份与还原入口。成功清理后会用默认浏览器打开 https://aigoodbro.com，每轮一次。
 
-**1.0.2 · 1108v3** 已提供 Mac Apple 芯片与 Intel 版、Windows 安装版与便携版、Android arm64 签名版。下载只认本仓库 [Releases](https://github.com/BLACKIELF/qingjing-aigoodbro/releases)。
+**1.0.5 · 1109v3** 已提供 Windows 安装版与便携版、Android arm64 签名版。下载只认本仓库 [Releases](https://github.com/Tri250/AlcedoStudio/releases)。
 
-「超级清静」自动处理已适配的广告项，无需逐项选择。开始前备份，跳过未适配的机型脚本，保留服务通知和受保护组件。
+「超级 Ai.Clean」自动处理已适配的广告项，无需逐项选择。开始前备份，跳过未适配的机型脚本，保留服务通知和受保护组件。
 
 ## Mac
 
@@ -34,7 +34,7 @@
 
 ## 开源与构建
 
-本项目为 MIT 开源软件的衍生版本。原始项目、作者说明和完整许可可在软件的“关于清静”中查看；源码保留原始 [MIT LICENSE](LICENSE)。
+本项目为 MIT 开源软件。完整许可可在软件的「关于 Ai.Clean」中查看；源码附带 [MIT LICENSE](LICENSE)。
 
 - Mac：`gui/build_mac.sh`（需要 uv、macOS 构建环境）。
 - Android：见 [Android 构建说明](android/README.md)；正式签名存于忽略目录或本仓库 Actions Secrets，不提交密钥。
