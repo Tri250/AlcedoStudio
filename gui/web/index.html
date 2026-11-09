@@ -309,7 +309,7 @@ const CHECKLIST_NAME = {"OPPO-ColorOS.md": "OPPO / ColorOS ", "荣耀-MagicOS.md
 function checklistName(brand){ return CHECKLIST_NAME[CHECKLIST[(brand || "").toUpperCase()]] || ""; }
 function openChecklist(){
   const f = CHECKLIST[((S.status && S.status.info.brand) || "").toUpperCase()];
-  api.open_url("https://github.com/BLACKIELF/qingjing-aigoodbro/blob/main/docs/" + encodeURIComponent("清单") + "/" + (f ? encodeURIComponent(f) : "README.md"));
+  api.open_url("https://github.com/Tri250/AlcedoStudio/blob/main/docs/" + encodeURIComponent("清单") + "/" + (f ? encodeURIComponent(f) : "README.md"));
 }
 
 /* ---------- 3 选择 ---------- */
@@ -558,7 +558,7 @@ function selfOff(){
 }
 
 /* ---------- 反馈 ---------- */
-const REPO = "https://github.com/BLACKIELF/qingjing-aigoodbro";
+const REPO = "https://github.com/Tri250/AlcedoStudio";
 const FB = {bug: ["遇到问题", "bug_report.md", "[问题] "], idea: ["功能建议", "feature_request.md", "[建议] "], device: ["适配新机型", "new_device.md", "[新机型] "]};
 async function openFeedback(type){
   type = type || "bug";
@@ -603,8 +603,8 @@ function copyDouyin(btn){
 async function openAbout(){
   const a = await api.about();
   modal(`<h3>${esc(a.name)}</h3><p class="lead">版本 ${esc(a.version)} · ${esc(a.build)}<br>品牌适配与维护：${esc(a.author)}</p>
-    <p class="lead">原始开源项目作者：${esc(a.upstream_author)}<br>本软件基于原项目二次开发，沿用其去广告引擎与机型脚本。</p>
-    <div class="actions"><button class="btn ghost" onclick="api.open_url('${esc(a.upstream_url)}')">原始项目</button><button class="btn ghost" onclick="api.open_url('${esc(a.project_url)}')">本项目</button></div>
+    <p class="lead">清静 · AiGoodBro 致力于把安卓手机里的广告、推荐和营销推送关干净，改动前逐项确认，随时一键还原。</p>
+    <div class="actions"><button class="btn ghost" onclick="api.open_url('${esc(a.project_url)}')">项目主页</button></div>
     <details style="margin-top:18px"><summary>MIT 开源许可</summary><pre class="report">${esc(a.license)}</pre></details>
     ${a.ui_license ? `<details style="margin-top:12px"><summary>AiGoodBro UI 开源许可</summary><pre class="report">${esc(a.ui_license)}</pre></details>` : ""}
     <div class="row" style="margin-top:16px"><button class="btn ghost" onclick="api.open_url('https://aigoodbro.com')"><span aria-hidden="true">🎁</span> 点击有惊喜 · aigoodbro.com</button></div>

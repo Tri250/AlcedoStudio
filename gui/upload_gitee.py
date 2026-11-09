@@ -25,12 +25,12 @@ import urllib.request
 import uuid
 from pathlib import Path
 
-GH_REPO = os.environ.get("GH_REPO", "rddmwmddr/android-ad-cleaner")
-GITEE_REPO = os.environ.get("GITEE_REPO", "rddmw/android-ad-cleaner")
+GH_REPO = os.environ.get("GH_REPO", "Tri250/AlcedoStudio")
+GITEE_REPO = os.environ.get("GITEE_REPO", "Tri250/AlcedoStudio")
 API = f"https://gitee.com/api/v5/repos/{GITEE_REPO}"
 TOKEN_FILE = Path.home() / ".config" / "gitee" / "token"
-ASSET_GLOB = os.environ.get("ASSET_GLOB", "AndroidAdCleaner-{ver}-*")
-UA = "roudai-release"
+ASSET_GLOB = os.environ.get("ASSET_GLOB", "Qingjing-AiGoodBro-{ver}-*")
+UA = "aigoodbro-release"
 NOT_ON_GITEE = ("-windows-setup.exe",)
 
 
@@ -159,7 +159,7 @@ def main(argv):
         files, sums = fetch_release(ver, stage)
         files = for_gitee(files)
         push_code(ver)
-        note = (f"肉呆去广告 v{ver}。更新说明：https://github.com/{GH_REPO}/releases/tag/v{ver}\n\n"
+        note = (f"清静 · AiGoodBro v{ver}。更新说明：https://github.com/{GH_REPO}/releases/tag/v{ver}\n\n"
                 "安装包和 GitHub Release 是同一份，可以用 SHA256SUMS.txt 核对。"
                 "Windows 安装版只在 GitHub Release 上，这里有免安装版。免安装版不替换、也不卸载已安装的旧版；"
                 "要让新版顶掉旧版，用 GitHub 上的安装版覆盖安装，或先卸载旧的「安卓去广告」（0.3.2 及更早版本装的名字），卸载不动数据与备份。")

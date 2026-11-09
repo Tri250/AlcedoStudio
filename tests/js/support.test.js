@@ -22,7 +22,7 @@ for(const entry of ['侧栏','关于','反馈']){
  test(entry+'开发者入口展示抖音口令与主页链接，不打开网址或发送内容',async()=>{
   const opened=[],sent=[];
   const page=await openPage({api:{
-   about:()=>({name:'清静 · AiGoodBro',version:'1.0.0',build:'1108v1',author:'AiGoodBro',upstream_author:'上游作者',upstream_url:'https://example.com',project_url:'https://example.com',license:'MIT'}),
+   about:()=>({name:'清静 · AiGoodBro',version:'1.0.0',build:'1108v1',author:'AiGoodBro',project_url:'https://example.com',license:'MIT'}),
    diagnostics:()=> '本地诊断',
    open_url:url=>opened.push(url),
    send_report:payload=>sent.push(payload),

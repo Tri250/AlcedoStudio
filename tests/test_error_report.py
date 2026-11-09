@@ -90,12 +90,14 @@ class ReportTests(unittest.TestCase):
             self.assertIn("格式不对", self.api.send_report(None)["error"])
         network.assert_not_called()
 
-    def test_about_keeps_upstream_attribution_and_full_mit_license(self):
+    def test_about_points_to_this_repo_without_upstream_fields(self):
         with patch.object(self.app.urllib.request, "urlopen") as network:
             info = self.api.about()
-        self.assertIn("肉呆大魔王", info["upstream_author"])
+        self.assertNotIn("upstream_author", info)
+        self.assertNotIn("upstream_url", info)
+        self.assertIn("AiGoodBro", info["author"])
         self.assertEqual(info["license"], (ROOT / "LICENSE").read_text(encoding="utf-8"))
-        self.assertEqual(info["project_url"], "https://github.com/BLACKIELF/qingjing-aigoodbro")
+        self.assertEqual(info["project_url"], "https://github.com/Tri250/AlcedoStudio")
         self.assertEqual(info["ui_license"], (ROOT / "licenses/AiGoodBro-UI-MIT.txt").read_text(encoding="utf-8"))
         network.assert_not_called()
 

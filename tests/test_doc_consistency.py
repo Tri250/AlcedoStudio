@@ -358,7 +358,7 @@ class SharedAssetTests(unittest.TestCase):
     def test_site_and_client_use_the_same_logo(self):
         """站点与桌面版侧栏各存一份图标（打包目录不同，必须有副本）；旧树也绿，守的是换图时不会只改一处。"""
         self.assertEqual((ROOT / "gui/web/img/logo.png").read_bytes(),
-                         (ROOT / "images/roudai-icon.png").read_bytes(),
+                         (ROOT / "images/aigoodbro-icon.png").read_bytes(),
                          "两处图标已不一致：换图时把 gui/web/img/logo.png 一并更新")
 
 

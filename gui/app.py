@@ -681,8 +681,8 @@ def win_clipboard(text):
 REPORT_URL = ""  # 本分支只预览/复制诊断，不向上游服务器发送日志。
 REPORT_LIMIT = 3            # 每小时最多上报几次（服务器另有按 IP / 安装编号 / 全站的配额）
 # 新版本提示：先查官网的版本文件（国内能访问），再查 GitHub。只取版本号，请求里不带手机、电脑信息。
-LATEST_URLS = ("https://api.github.com/repos/BLACKIELF/qingjing-aigoodbro/releases/latest",)
-DOWNLOAD_PAGE = "https://github.com/BLACKIELF/qingjing-aigoodbro/releases/latest"
+LATEST_URLS = ("https://api.github.com/repos/Tri250/AlcedoStudio/releases/latest",)
+DOWNLOAD_PAGE = "https://github.com/Tri250/AlcedoStudio/releases/latest"
 # 断线后跳过后面各步时写给用户的话；手机版没有电脑，启动时换成自己的说法（aac_android.main.boot，#729）
 LINK_LOST = "手机和电脑已断开，这一步没有执行。重新连接手机后点「重试」。"
 # 诊断里「点击被拒」那一栏：手机版会整段复制与上报，不能写「电脑」（aac_android.main.boot，#747）
@@ -1184,11 +1184,9 @@ class Api:
             license_text = license_file.read_text(encoding="utf-8")
         except OSError:
             license_text = "未找到随附的 MIT 许可文件，请查看本项目源码中的 LICENSE。"
-        return {"name": APP_NAME, "version": VERSION, "build": "1108v4",
+        return {"name": APP_NAME, "version": VERSION, "build": "1109v2",
                 "author": "AiGoodBro",
-                "upstream_author": "肉呆大魔王（rddmwmddr）",
-                "upstream_url": "https://github.com/rddmwmddr/android-ad-cleaner",
-                "project_url": "https://github.com/BLACKIELF/qingjing-aigoodbro",
+                "project_url": "https://github.com/Tri250/AlcedoStudio",
                 "license": license_text,
                 "ui_license": Path(BASE, "licenses", "AiGoodBro-UI-MIT.txt").read_text(encoding="utf-8")}
 
@@ -1693,13 +1691,13 @@ def _attribution(state, blocked, error, rejected):
             "如果这是 Windows 10 且从没装过，先装一个再试：\n"
             "https://developer.microsoft.com/microsoft-edge/webview2/\n\n"
             "装过还这样，把括号里的原文发到 "
-            "https://github.com/BLACKIELF/qingjing-aigoodbro/issues/new 。\n\n"
+            "https://github.com/Tri250/AlcedoStudio/issues/new 。\n\n"
             f"（{error}）", False)
     return (
         "程序启动失败。WebView2 运行时在，程序文件也没有被 Windows 锁定，"
         "是按别的原因退出的。\n\n"
         "把下面括号里的原文发到 "
-        "https://github.com/BLACKIELF/qingjing-aigoodbro/issues/new ，我们按它定位。\n\n"
+        "https://github.com/Tri250/AlcedoStudio/issues/new ，我们按它定位。\n\n"
         f"（{error}）", False)
 
 

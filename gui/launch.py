@@ -84,8 +84,7 @@ def smoke_gui(window, result):
                     about_ok = window.evaluate_js("""(() => {
                         const box = document.querySelector('#modalbox');
                         return box && box.textContent.includes('AiGoodBro') &&
-                            box.textContent.includes('肉呆大魔王') &&
-                            box.textContent.includes('Guomeiqing') &&
+                            box.textContent.includes('清静') &&
                             box.textContent.includes('Permission is hereby granted');
                     })()""")
                     if about_ok:
