@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>清静 v1.0.3-1108v4 · 改造后 UI 全貌</title>
+<style>
+:root {
+  --page:#F2F4F9; --ink:#171A21; --mutedc:#5B6170; --linec:rgba(23,26,33,.10);
+  --cardc:#FFFFFF;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--page); color:var(--ink); font-family:"PingFang SC","HarmonyOS Sans SC","MiSans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+.wrap { max-width:1180px; margin:0 auto; padding:32px 24px 48px; }
+h1 { font-size:22px; font-weight:700; letter-spacing:0; }
+.sub { font-size:13px; color:var(--mutedc); margin-top:6px; line-height:20px; }
+
+/* ── 设计令牌一览 ── */
+.tokens { margin-top:20px; background:var(--cardc); border:1px solid var(--linec); border-radius:14px; padding:18px 20px; display:flex; flex-wrap:wrap; gap:12px 20px; align-items:flex-start; }
+.tok-group { min-width:220px; flex:1; }
+.tok-group h2 { font-size:12px; font-weight:600; color:var(--mutedc); margin-bottom:10px; letter-spacing:.04em; }
+.swatches { display:flex; flex-wrap:wrap; gap:8px; }
+.sw { display:flex; align-items:center; gap:7px; background:#F4F6FA; border-radius:999px; padding:4px 10px 4px 5px; }
+.sw i { width:20px; height:20px; border-radius:50%; display:block; }
+.sw span { font-size:12px; color:#3A3F4C; font-weight:500; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; }
+.chip { font-size:12px; color:#24418C; background:#EDF3FF; border:1px solid #D8E3FF; border-radius:999px; padding:5px 12px; font-weight:500; }
+
+/* ── 屏幕网格 ── */
+.grid { margin-top:24px; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:20px; }
+.cell { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.cap { font-size:12px; color:var(--mutedc); text-align:center; }
+.cap b { color:var(--ink); font-weight:600; }
+
+/* ── 手机框架 ── */
+.phone { position:relative; width:240px; height:502px; border-radius:22px; padding:12px 14px 14px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 28px rgba(23,26,33,.12), 0 0 0 1px rgba(23,26,33,.06); }
+.light { background:#F6F8FC; color:#11141B; --muted:#4B5263; --card:#FFFFFF; --line:#D5DAE5; --tile:#EBEFF7; --pri:#1F5EFF; --onpri:#FFFFFF; --pc:#E3ECFF; --onpc:#0A2A6B; --sec:#0E9F8A; --scc:#D6F6EF; --onscc:#003D34; }
+.dark { background:#0B0E14; color:#E7EAF2; --muted:#C1C7D6; --card:#191F2B; --line:#3A4152; --tile:#272E3D; --pri:#AFC6FF; --onpri:#002C77; --pc:#1A44A8; --onpc:#E6EDFF; --sec:#63E0C6; --scc:#0F4F46; --onscc:#C9F6EC; }
+.sbar { display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--muted); padding-bottom:4px; }
+.sbar .si { letter-spacing:2px; font-size:10px; }
+
+/* 顶栏 */
+.bar { display:flex; align-items:center; gap:10px; padding:4px 0 8px; }
+.av { width:28px; height:28px; border-radius:9px; background:linear-gradient(135deg,#1F5EFF,#0E9F8A); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.bt b { display:block; font-size:14px; font-weight:600; line-height:18px; }
+.bt span { font-size:11px; color:var(--muted); line-height:14px; }
+.dots { margin-left:auto; position:relative; color:var(--muted); font-size:16px; letter-spacing:1px; padding-right:2px; }
+.nd { position:absolute; top:1px; right:-1px; width:7px; height:7px; border-radius:50%; background:#D93025; border:1.5px solid var(--card,#fff); }
+.back { color:var(--muted); font-size:18px; line-height:1; padding-right:2px; }
+.tt b { display:block; font-size:15px; font-weight:700; line-height:19px; }
+.tt span { font-size:11px; color:var(--muted); line-height:14px; }
+
+/* 首页主视觉 */
+.hero { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; }
+.mark { width:106px; height:106px; border-radius:34%; background:linear-gradient(135deg,var(--pri),var(--sec)); position:relative; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px rgba(255,255,255,.25); }
+.mark::before { content:""; position:absolute; inset:7px; border-radius:34%; border:1px solid rgba(255,255,255,.35); }
+.mark svg { width:36px; height:36px; color:#fff; }
+.dev { font-size:17px; font-weight:700; letter-spacing:0; }
+.spill { display:inline-flex; align-items:center; gap:6px; background:var(--scc); color:var(--onscc); font-size:12px; font-weight:500; padding:4px 11px; border-radius:999px; }
+.spill i { width:6px; height:6px; border-radius:50%; background:var(--sec); }
+.acts { display:flex; flex-direction:column; gap:9px; }
+.btn { height:35px; border-radius:999px; display:flex; align-items:center; justify-content:center; gap:7px; font-size:13px; font-weight:600; letter-spacing:0; }
+.btn svg { width:15px; height:15px; }
+.pri { background:var(--pri); color:var(--onpri); }
+.ton { background:var(--scc); color:var(--onscc); }
+.out { border:1px solid var(--line); color:inherit; }
+
+/* 手动选择页 */
+.cho { display:flex; flex-direction:column; flex:1; gap:9px; padding-top:2px; }
+.warn { background:var(--pc); color:var(--onpc); border-radius:13px; padding:10px 12px; font-size:12px; line-height:18px; display:flex; gap:9px; align-items:flex-start; }
+.tile { flex:none; width:25px; height:25px; border-radius:9px; background:rgba(255,255,255,.72); color:#1F5EFF; display:flex; align-items:center; justify-content:center; }
+.dark .tile { background:rgba(255,255,255,.14); color:var(--pri); }
+.tile svg { width:14px; height:14px; }
+.st { font-size:12px; font-weight:600; color:#1F5EFF; }
+.dark .st { color:var(--pri); }
+.rows { display:flex; flex-direction:column; gap:7px; }
+.rw { background:var(--card); border:1px solid var(--line); border-radius:13px; padding:9px 11px; display:flex; align-items:center; gap:10px; }
+.rw .tile { width:27px; height:27px; }
+.rw .tx b { display:block; font-size:13px; font-weight:600; line-height:17px; }
+.rw .tx span { font-size:11px; color:var(--muted); line-height:14px; }
+.swx { margin-left:auto; flex:none; width:31px; height:18px; border-radius:999px; background:var(--pri); position:relative; }
+.swx::after { content:""; position:absolute; top:2.5px; right:2.5px; width:13px; height:13px; border-radius:50%; background:var(--onpri); }
+.swx.off { background:var(--tile); }
+.swx.off::after { right:auto; left:2.5px; background:var(--muted); }
+.tbar { margin-top:auto; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:7px 8px 7px 13px; display:flex; align-items:center; gap:8px; box-shadow:0 5px 14px rgba(17,20,27,.10); }
+.tbar > span { font-size:12px; font-weight:500; color:var(--muted); }
+.go { margin-left:auto; background:#1F5EFF; color:#fff; height:31px; padding:0 17px; border-radius:999px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:5px; }
+.dark .go { background:var(--pri); color:var(--onpri); }
+.go svg { width:13px; height:13px; }
+
+/* 执行页 */
+.rt { font-size:16px; font-weight:700; text-align:center; margin-top:8px; letter-spacing:0; }
+.ring { width:110px; height:110px; margin:14px auto 6px; position:relative; }
+.ring svg { width:100%; height:100%; transform:rotate(-90deg); }
+.ring .pct { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:700; font-variant-numeric:tabular-nums; }
+.steps { margin-top:10px; display:flex; flex-direction:column; gap:7px; }
+.stp { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 11px; display:flex; align-items:center; gap:10px; font-size:13px; font-weight:500; }
+.stp.cur { font-weight:600; }
+.bd { flex:none; width:23px; height:23px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; }
+.bd.done { background:var(--sec); color:var(--onscc); }
+.bd.wait { background:var(--tile); color:var(--muted); }
+.bd svg { width:12px; height:12px; }
+.spin { width:17px; height:17px; border-radius:50%; border:2.5px solid var(--tile); border-top-color:var(--sec); animation:spin 1s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.stp .sub2 { margin-left:auto; font-size:11px; color:var(--muted); font-weight:400; font-variant-numeric:tabular-nums; }
+
+/* 完成页 */
+.dn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; }
+.cwrap { position:relative; display:flex; align-items:center; justify-content:center; margin:6px 0 2px; }
+.ripple { position:absolute; width:92px; height:92px; border-radius:50%; background:var(--sec); animation:rip 2.4s ease-out infinite; }
+.ripple.r2 { animation-delay:1.2s; }
+@keyframes rip { 0% { transform:scale(1); opacity:.30; } 100% { transform:scale(1.8); opacity:0; } }
+@media (prefers-reduced-motion: reduce) { .ripple, .spin { animation:none; } }
+.circ { position:relative; width:92px; height:92px; border-radius:50%; background:var(--sec); display:flex; align-items:center; justify-content:center; }
+.circ svg { width:36px; height:36px; color:var(--onscc); }
+.dn h3 { font-size:17px; font-weight:700; letter-spacing:0; }
+.dn .meta { font-size:12px; color:var(--muted); }
+.res { width:100%; display:flex; flex-direction:column; gap:7px; margin-top:4px; }
+.res .rw { padding:10px 12px; }
+.res .num { margin-left:auto; font-size:13px; font-weight:600; font-variant-numeric:tabular-nums; }
+
+/* 冷启动 */
+.sp { flex:1; display:flex; align-items:center; justify-content:center; }
+.splash-mark { width:76px; height:76px; border-radius:34%; background:#1F5EFF; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 22px rgba(31,94,255,.28); }
+.splash-mark svg { width:30px; height:30px; color:#fff; }
+
+.foot { margin-top:26px; font-size:12px; color:var(--mutedc); line-height:20px; }
+.foot code { background:#EFF1F7; border-radius:5px; padding:1px 6px; font-size:11px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>清静 · 改造后 UI 全貌</h1>
+  <p class="sub">release <b>v1.0.3-1108v4</b> · 依据源码设计令牌 1:1 渲染（Theme.kt 配色 / 字阶 / 圆角 + Common.kt 组件规格），非真机截图。构建后以真机为准。</p>
+
+  <div class="tokens">
+    <div class="tok-group">
+      <h2>品牌色板</h2>
+      <div class="swatches">
+        <div class="sw"><i style="background:#1F5EFF"></i><span>品牌蓝</span></div>
+        <div class="sw"><i style="background:#0E9F8A"></i><span>薄荷绿</span></div>
+        <div class="sw"><i style="background:#E3ECFF"></i><span>蓝容器</span></div>
+        <div class="sw"><i style="background:#D6F6EF"></i><span>绿容器</span></div>
+        <div class="sw"><i style="background:#F6F8FC"></i><span>浅色底</span></div>
+        <div class="sw"><i style="background:#0B0E14"></i><span>深色底</span></div>
+        <div class="sw"><i style="background:#191F2B"></i><span>深色卡片</span></div>
+      </div>
+    </div>
+    <div class="tok-group">
+      <h2>统一规格</h2>
+      <div class="chips">
+        <span class="chip">按钮 56dp · 全圆角</span>
+        <span class="chip">卡片 surface + 20dp 圆角</span>
+        <span class="chip">图标底座 36dp</span>
+        <span class="chip">状态胶囊省略保护</span>
+        <span class="chip">中文字距 0 · 行高 18sp</span>
+        <span class="chip">内容宽度 600dp</span>
+        <span class="chip">减弱动画适配</span>
+        <span class="chip">成功涟漪动效</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="cell">
+      <div class="phone light"><div class="sp"><div class="splash-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M4 20 L20 4"/></svg></div></div></div>
+      <div class="cap"><b>冷启动</b> · 品牌时刻（浅色）</div>
+    </div>
+
+    <div class="cell">
+      <div class="phone light">
+        <div class="sbar"><span>9:41</span><span class="si">▲▪▮</span></div>
+        <div class="bar">
+          <div class="av">Ai</div>
+          <div class="bt"><b>清静</b><span>AiGoodBro</span></div>
+          <div class="dots">⋯<i class="nd"></i></div>
+        </div>
+        <div class="hero">
+          <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M4 20 L20 4"/></svg></div>
+          <div class="dev">Xiaomi 14 Ultra</div>
+          <div class="spill"><i></i>已就绪</div>
+        </div>
+        <div class="acts">
+          <div class="btn pri"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L6 13h5l-1 9 8-13h-6z"/></svg>超级清静</div>
+          <div class="btn ton"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>手动选择去广告</div>
+          <div class="btn out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>还原改动</div>
+        </div>
+      </div>
+      <div class="cap"><b>首页</b> · 品牌徽标 + 三枚统一入口（浅色）</div>
+    </div>
+
+    <div class="cell">
+      <div class="phone dark">
+        <div class="sbar"><span>9:41</span><span class="si">▲▪▮</span></div>
+        <div class="bar">
+          <div class="av">Ai</div>
+          <div class="bt"><b>清静</b><span>AiGoodBro</span></div>
+          <div class="dots">⋯<i class="nd"></i></div>
+        </div>
+        <div class="hero">
+          <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M4 20 L20 4"/></svg></div>
+          <div class="dev">Xiaomi 14 Ultra</div>
+          <div class="spill"><i></i>已就绪</div>
+        </div>
+        <div class="acts">
+          <div class="btn pri"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L6 13h5l-1 9 8-13h-6z"/></svg>超级清静</div>
+          <div class="btn ton"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>手动选择去广告</div>
+          <div class="btn out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>还原改动</div>
+        </div>
+      </div>
+      <div class="cap"><b>首页</b> · 深色层次（#191F2B 卡片）</div>
+    </div>
+
+    <div class="cell">
+      <div class="phone light">
+        <div class="sbar"><span>9:41</span><span class="si">▲▪▮</span></div>
+        <div class="bar">
+          <span class="back">←</span>
+          <div class="tt"><b>手动选择去广告</b><span>ColorOS 15 · 逐项确认</span></div>
+        </div>
+        <div class="cho">
+          <div class="warn"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg></div>开始前会存一份改动前的快照，每一项都能在「还原改动」里恢复。</div>
+          <div class="st">App 里的广告开关</div>
+          <div class="rows">
+            <div class="rw"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M4 20 L20 4"/></svg></div><div class="tx"><b>开屏广告</b><span>3 个开关</span></div><i class="swx"></i></div>
+            <div class="rw"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M8 20h8"/></svg></div><div class="tx"><b>营销通知渠道</b><span>18 个渠道</span></div><i class="swx"></i></div>
+            <div class="rw"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></div><div class="tx"><b>资讯推荐</b><span>6 个开关</span></div><i class="swx"></i></div>
+          </div>
+          <div class="tbar"><span>已选 12 项</span><div class="go"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>开始</div></div>
+        </div>
+      </div>
+      <div class="cap"><b>手动选择去广告</b> · 快照提示 + 悬浮工具栏</div>
+    </div>
+
+    <div class="cell">
+      <div class="phone light">
+        <div class="sbar"><span>9:41</span><span class="si">▲▪▮</span></div>
+        <div class="rt">正在关闭营销开关</div>
+        <div class="ring">
+          <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#EBEFF7" stroke-width="7"/><circle cx="50" cy="50" r="44" fill="none" stroke="#1F5EFF" stroke-width="7" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="69"/></svg>
+          <div class="pct">75%</div>
+        </div>
+        <div class="steps">
+          <div class="stp"><span class="bd done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>读取机型脚本<span class="sub2">已完成</span></div>
+          <div class="stp cur"><span class="spin"></span>关闭系统广告开关<span class="sub2">2 / 3</span></div>
+          <div class="stp"><span class="bd wait">3</span>关闭营销通知渠道<span class="sub2">待执行</span></div>
+        </div>
+      </div>
+      <div class="cap"><b>执行中</b> · 进度环 + 步骤列表</div>
+    </div>
+
+    <div class="cell">
+      <div class="phone dark">
+        <div class="sbar"><span>9:41</span><span class="si">▲▪▮</span></div>
+        <div class="dn">
+          <div class="cwrap"><i class="ripple"></i><i class="ripple r2"></i><div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l6 6L20 7"/></svg></div></div>
+          <h3>已完成</h3>
+          <div class="meta">关闭 27 项 · 用时 4 分 12 秒</div>
+          <div class="res">
+            <div class="rw"><div class="tx"><b>营销通知渠道</b></div><span class="num">18</span></div>
+            <div class="rw"><div class="tx"><b>App 内广告开关</b></div><span class="num">9</span></div>
+          </div>
+          <div class="btn pri" style="width:100%; margin-top:6px;">完成</div>
+        </div>
+      </div>
+      <div class="cap"><b>完成</b> · 深色 + 成功涟漪动效</div>
+    </div>
+  </div>
+
+  <p class="foot">所有颜色、圆角、字号、间距取自 <code>Theme.kt</code> / <code>Common.kt</code> 的设计令牌；本页为静态还原，实际动画（涟漪、Morph 形变、共享元素过渡）与真机分辨率适配以构建后真机为准。手机框架为示意比例（240×502），真实应用为 360dp 宽度基准。</p>
+</div>
+</body>
+</html>
