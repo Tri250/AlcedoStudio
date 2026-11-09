@@ -23,8 +23,8 @@ import java.io.File
  * Python 侧要用到的系统能力：打开网页、复制、提示音、执行期间保活。桌面版在这些地方用 webbrowser / afplay / winsound。
  * 由 aac_android 经 Chaquopy 的 jclass 调用，全部是静态方法。
  */
-/** 品牌主色：通知着色与悬浮胶囊共用（与 ui/Theme.kt 的 primary 同一值）。 */
-const val BRAND_COLOR = 0xFF2866F7.toInt()
+/** 品牌主色：通知着色与悬浮胶囊共用（取青墨绿中间调，深浅两档通知底上都可读）。 */
+const val BRAND_COLOR = 0xFF18A385.toInt()
 
 object Native {
     lateinit var app: Context
@@ -134,7 +134,7 @@ object Native {
             textSize = 11f
             setTextColor(0xFFFFFFFF.toInt())
             setPadding((8 * dp).toInt(), (5 * dp).toInt(), (10 * dp).toInt(), (5 * dp).toInt())
-            background = GradientDrawable().apply { setColor(0xCC2866F7.toInt()); cornerRadius = 14 * dp }
+            background = GradientDrawable().apply { setColor(0xCC18A385.toInt()); cornerRadius = 14 * dp }
         }
         val lp = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,

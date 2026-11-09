@@ -73,38 +73,39 @@ fun AacTheme(content: @Composable () -> Unit) {
     val context = LocalContext.current
     val dark = isSystemInDarkTheme()
     val colors = if (dark) darkColorScheme(
-        primary = Color(0xFFAFC6FF), onPrimary = Color(0xFF002C77),
-        primaryContainer = Color(0xFF1A44A8), onPrimaryContainer = Color(0xFFE6EDFF),
-        // 品牌第二色：Ai.Clean 的薄荷绿，只用在「已就绪 / 成功」和次级操作上
-        secondary = Color(0xFF63E0C6), onSecondary = Color(0xFF00382F),
-        secondaryContainer = Color(0xFF0F4F46), onSecondaryContainer = Color(0xFFC9F6EC),
+        // 深空黑 + 青墨绿：底色是带青绿底味的深空黑，主色是深空黑上可读的青墨绿亮档
+        primary = Color(0xFF58CDA6), onPrimary = Color(0xFF003826),
+        primaryContainer = Color(0xFF0D5B44), onPrimaryContainer = Color(0xFFC3F2E0),
+        // 品牌第二色：薄荷青，只用在「已就绪 / 成功」和次级操作上，与主色同属青绿家族
+        secondary = Color(0xFF63E0C6), onSecondary = Color(0xFF00382B),
+        secondaryContainer = Color(0xFF0E4F41), onSecondaryContainer = Color(0xFFC7F3E6),
         tertiary = Color(0xFFFFC85C), onTertiary = Color(0xFF3D2A00),
         tertiaryContainer = Color(0xFF5A4100), onTertiaryContainer = Color(0xFFFFE7B3),
         // 卡片比页面亮一档：深色下也看得出层次，不容易和底色糊在一起
-        background = Color(0xFF0B0E14), surface = Color(0xFF191F2B),
-        // 中性梯度全部带蓝味，与品牌底色同调
-        onBackground = Color(0xFFE7EAF2), onSurface = Color(0xFFE7EAF2),
-        surfaceVariant = Color(0xFF3D4454), onSurfaceVariant = Color(0xFFC1C7D6),
-        outline = Color(0xFF8B93A7), outlineVariant = Color(0xFF3A4152),
-        surfaceDim = Color(0xFF0B0E14),
-        surfaceContainerLowest = Color(0xFF080A0F), surfaceContainerLow = Color(0xFF11151D),
-        surfaceContainer = Color(0xFF10141C), surfaceContainerHigh = Color(0xFF1E2431),
-        surfaceContainerHighest = Color(0xFF272E3D),
+        background = Color(0xFF060908), surface = Color(0xFF131916),
+        // 中性梯度全部带青绿味，与品牌底色同调
+        onBackground = Color(0xFFE2E8E3), onSurface = Color(0xFFE2E8E3),
+        surfaceVariant = Color(0xFF3A463F), onSurfaceVariant = Color(0xFFBFCBC3),
+        outline = Color(0xFF89978E), outlineVariant = Color(0xFF3B463F),
+        surfaceDim = Color(0xFF060908),
+        surfaceContainerLowest = Color(0xFF040605), surfaceContainerLow = Color(0xFF0F1411),
+        surfaceContainer = Color(0xFF0D120F), surfaceContainerHigh = Color(0xFF1C231E),
+        surfaceContainerHighest = Color(0xFF262E28),
     ) else lightColorScheme(
-        primary = Color(0xFF1F5EFF), onPrimary = Color.White,
-        primaryContainer = Color(0xFFE3ECFF), onPrimaryContainer = Color(0xFF0A2A6B),
-        secondary = Color(0xFF0E9F8A), onSecondary = Color.White,
-        secondaryContainer = Color(0xFFD6F6EF), onSecondaryContainer = Color(0xFF003D34),
+        primary = Color(0xFF0E7C5F), onPrimary = Color.White,
+        primaryContainer = Color(0xFFD3F1E4), onPrimaryContainer = Color(0xFF00382A),
+        secondary = Color(0xFF12A184), onSecondary = Color.White,
+        secondaryContainer = Color(0xFFCFF0E3), onSecondaryContainer = Color(0xFF00402F),
         tertiary = Color(0xFFF0A000), onTertiary = Color(0xFF3D2A00),
         tertiaryContainer = Color(0xFFFFF0D1), onTertiaryContainer = Color(0xFF3D2A00),
-        background = Color(0xFFF6F8FC), surface = Color.White,
-        onBackground = Color(0xFF11141B), onSurface = Color(0xFF11141B),
-        surfaceVariant = Color(0xFFE7EAF2), onSurfaceVariant = Color(0xFF4B5263),
-        outline = Color(0xFF767E91), outlineVariant = Color(0xFFD5DAE5),
-        surfaceDim = Color(0xFFDCE1EB),
-        surfaceContainerLowest = Color.White, surfaceContainerLow = Color(0xFFF2F5FA),
-        surfaceContainer = Color(0xFFF5F7FB), surfaceContainerHigh = Color(0xFFEBEFF7),
-        surfaceContainerHighest = Color(0xFFE2E7F1),
+        background = Color(0xFFF4F8F5), surface = Color.White,
+        onBackground = Color(0xFF101713), onSurface = Color(0xFF101713),
+        surfaceVariant = Color(0xFFE2EAE5), onSurfaceVariant = Color(0xFF44544B),
+        outline = Color(0xFF6E7F75), outlineVariant = Color(0xFFD2DED6),
+        surfaceDim = Color(0xFFDBE3DD),
+        surfaceContainerLowest = Color.White, surfaceContainerLow = Color(0xFFF1F5F1),
+        surfaceContainer = Color(0xFFF4F7F4), surfaceContainerHigh = Color(0xFFE9EFEA),
+        surfaceContainerHighest = Color(0xFFDFE8E1),
     )
     val reduce = remember {
         Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f

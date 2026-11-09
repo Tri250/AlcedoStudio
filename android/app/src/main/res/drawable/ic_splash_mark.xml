@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 启动品牌时刻：品牌蓝圆角方块 + 白色「去广告」图形，和首页 BrandMark 同一语言 -->
+<!-- 启动品牌时刻：青墨绿圆角方块 + 白色「去广告」图形，和首页 BrandMark 同一语言 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="88dp"
     android:height="88dp"
     android:viewportWidth="960"
     android:viewportHeight="960">
   <path
-      android:fillColor="#1F5EFF"
+      android:fillColor="#0E7C5F"
       android:pathData="M300,0 L660,0 Q960,0 960,300 L960,660 Q960,960 660,960 L300,960 Q0,960 0,660 L0,300 Q0,0 300,0 Z"/>
   <group
       android:scaleX="0.52"
