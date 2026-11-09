@@ -37,9 +37,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.FloatingToolbarColors
-import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
@@ -146,28 +143,27 @@ fun ChooseScreen(model: AppModel) {
 @Composable
 private fun StartToolbar(model: AppModel, selection: Selection, modifier: Modifier) {
     val blocked = selection.detection.blocked
-    val height = ButtonDefaults.MediumContainerHeight
     val colors = MaterialTheme.colorScheme
-    HorizontalFloatingToolbar(
-        expanded = true,
-        colors = FloatingToolbarColors(
-            toolbarContainerColor = colors.surface,
-            toolbarContentColor = colors.onSurface,
-            fabContainerColor = colors.surface,
-            fabContentColor = colors.onSurface,
-        ),
+    // 不用 HorizontalFloatingToolbar：它按无界约束测量内容来算展开尺寸，胶囊里的 weight(1f)
+    // 要求有界宽度，两者冲突时容器被撑成一块大圆盖住列表（OPPO Find X9 Pro 实测）。
+    // 改成有界的 Surface 胶囊底栏：整行宽度由 fillMaxWidth 定死，不会溢出。
+    Surface(
+        shape = RoundedCornerShape(percent = 50),
+        color = colors.surface,
+        contentColor = colors.onSurface,
+        shadowElevation = 6.dp,
         modifier = modifier
             // 平板和折叠屏展开时和列表同宽，不要横贯整块屏幕
             .widthIn(max = PageWidth)
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
-            // 最小 64dp，系统字号很大时让工具栏跟按钮一起长高，不裁字
-            .heightIn(min = FloatingToolbarDefaults.ContainerSize),
+            .fillMaxWidth()
+            .heightIn(min = 56.dp),
     ) {
         Row(
             modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(start = 16.dp),
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // 胶囊占剩余宽度，字号放大时省略而不是把「开始」挤出屏幕
@@ -177,14 +173,10 @@ private fun StartToolbar(model: AppModel, selection: Selection, modifier: Modifi
             Spacer(Modifier.width(12.dp))
             Button(
                 onClick = model::startChosen,
-                shapes = ButtonDefaults.shapesFor(height),
-                contentPadding = ButtonDefaults.contentPaddingFor(height),
+                shapes = ButtonDefaults.shapes(),
                 enabled = !blocked,
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .heightIn(min = height),
             ) {
-                ButtonLabel("开始", height, R.drawable.ic_play_arrow)
+                ButtonLabel("开始", ButtonDefaults.MinHeight, R.drawable.ic_play_arrow)
             }
         }
     }

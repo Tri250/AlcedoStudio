@@ -36,7 +36,7 @@ Jetpack Compose + 官方 Material 3 Expressive，代码在 `app/src/main/java/..
 | 按钮 M / L 尺寸与按下形变 | 主按钮 96dp，屏幕矮时 56dp |
 | 标准 `ButtonGroup` | 暂停 / 停止（按下的变宽、旁边让位） |
 | 连接按钮组 + `ToggleButton` | 反馈类型单选 |
-| `HorizontalFloatingToolbar` | 确认页的已选数和开始 |
+| `Surface` 胶囊底栏 | 确认页的已选数和开始（FloatingToolbar 按无界约束测内容，配 weight 会撑成大圆，弃用） |
 | `SegmentedListItem` | 所有列表 |
 | `LargeFlexibleTopAppBar`、`MediumFlexibleTopAppBar` | 首次设置、确认页 |
 | 强调字体、预测性返回、触感 | 标题与数字；可返回的页面跟手缩小；确认、失败、每进一步 |
