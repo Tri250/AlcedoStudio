@@ -14,7 +14,7 @@ except ImportError:
     import winpreflight
 
 APP_NAME = "Ai.Clean"
-VERSION = "1.0.5"
+VERSION = "1.0.6"
 FROZEN = getattr(sys, "frozen", False)
 BASE = getattr(sys, "_MEIPASS", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TOOL = os.path.join(BASE, "tool")
@@ -1184,7 +1184,7 @@ class Api:
             license_text = license_file.read_text(encoding="utf-8")
         except OSError:
             license_text = "未找到随附的 MIT 许可文件，请查看本项目源码中的 LICENSE。"
-        return {"name": APP_NAME, "version": VERSION, "build": "1109v3",
+        return {"name": APP_NAME, "version": VERSION, "build": "1109v4",
                 "author": "Ai.Clean",
                 "project_url": "https://github.com/Tri250/AlcedoStudio",
                 "license": license_text,
@@ -1200,7 +1200,8 @@ class Api:
                                                                "Accept": "application/json"})
                 with urllib.request.urlopen(request, timeout=6) as response:
                     data = json.loads(response.read(65536).decode("utf-8"))
-                latest = str(data.get("version") or data.get("tag_name") or "")
+                # 带构建后缀的 tag（v1.0.6-1109v4）截掉后缀再比，否则更新检查一直静默失效
+                latest = str(data.get("version") or data.get("tag_name") or "").lstrip("v").split("-", 1)[0]
             except Exception:
                 continue
             if not version_key(latest):

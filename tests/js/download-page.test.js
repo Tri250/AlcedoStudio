@@ -221,7 +221,7 @@ test("网盘链接填回时，国内下载指向百度网盘并带提取码", ()
 test("国内下载的路径与页首写的版本号是同一个", () => {
   const page = open({
     apk: false,
-    transform: (html) => html.replace('gitee: "",', 'gitee: "https://gitee.com/Tri250/AlcedoStudio/releases/download/v1.0.5/",'),
+    transform: (html) => html.replace('gitee: "",', `gitee: "https://gitee.com/Tri250/AlcedoStudio/releases/download/v${html.match(/version: "([^"]+)"/)[1]}/",`),
   });
   try {
     const version = page.hero().match(/^v([\w.-]+)/)[1];
@@ -232,7 +232,7 @@ test("国内下载的路径与页首写的版本号是同一个", () => {
 
 test("退路：gitee 配好后国内下载回到 Gitee，dl-after 出现 Gitee 全部版本", () => {
   const page = open({
-    transform: (html) => html.replace('gitee: "",', 'gitee: "https://gitee.com/Tri250/AlcedoStudio/releases/download/v1.0.5/",'),
+    transform: (html) => html.replace('gitee: "",', `gitee: "https://gitee.com/Tri250/AlcedoStudio/releases/download/v${html.match(/version: "([^"]+)"/)[1]}/",`),
   });
   try {
     assert.match(page.button(page.card("免安装"), "国内下载").href, /gitee\.com.*windows-portable\.zip$/);

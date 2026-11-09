@@ -392,6 +392,10 @@ class GuiTests(unittest.TestCase):
         with patch.object(self.app.urllib.request, "urlopen",
                           return_value=Reply(json.dumps({"tag_name": "v9.9.10"}).encode())):
             self.assertEqual(api.latest_version()["version"], "9.9.10")
+        # 本仓库的 tag 带构建后缀（v1.0.6-1109v4）：截掉后缀再比，不能当「解析不出来」跳过
+        with patch.object(self.app.urllib.request, "urlopen",
+                          return_value=Reply(json.dumps({"tag_name": "v9.9.11-1110v1"}).encode())):
+            self.assertEqual(api.latest_version()["version"], "9.9.11")
         with patch.object(self.app.urllib.request, "urlopen", side_effect=OSError("offline")):
             self.assertEqual(api.latest_version(), {})
         self.assertGreater(self.app.version_key("0.2.10"), self.app.version_key("0.2.9"))
