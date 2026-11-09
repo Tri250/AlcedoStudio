@@ -145,7 +145,7 @@ html:has(.app:target), html:has(.app:target) body{background:transparent}
       <button class="link" onclick="openSettings()"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 2-.5 2-2 .9-1.9-.5-1.8 3 1.5 1.5v2.2l-1.5 1.5 1.8 3 1.9-.5 2 .9.5 2h3l.5-2 2-.9 1.9.5 1.8-3-1.5-1.5V8.9l1.5-1.5-1.8-3-1.9.5-2-.9-.5-2z"/><circle cx="9.5" cy="10" r="2.5"/></svg>设置</button>
       <button class="link" onclick="openFeedback()"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3.5h14V14H8l-4 3v-3H3zM6 7h8M6 10h5"/></svg>反馈问题</button>
       <button class="link" onclick="api.open_url('https://github.com/BLACKIELF/qingjing-aigoodbro')"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3.5h5.5L10 5l1.5-1.5H17v12h-5.5L10 17l-1.5-1.5H3zM10 5v12"/></svg>使用说明</button>
-      <button class="link" onclick="openSupport()"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14v10H8l-4 3v-3H3zM6 7h3M6 10h6"/><path d="M13 6.5v3M11.5 8H14.5"/></svg>企业微信客服</button>
+      <button class="link" onclick="openSupport()"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14v10H8l-4 3v-3H3zM6 7h3M6 10h6"/><path d="M13 6.5v3M11.5 8H14.5"/></svg>开发者支持</button>
       <button class="link" onclick="openAbout()"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 9v5M10 6.2v.1"/></svg>关于清静</button>
       <button class="link newver hide" id="newver"></button>
       <div class="ver" id="ver"></div>
@@ -568,7 +568,7 @@ async function openFeedback(type){
     <label class="chk"><input type="checkbox" id="fbdiag" checked><span>附带诊断信息<small>客户端版本、电脑系统、手机型号和系统版本、执行结果和最近的日志；adb 读到 0 台时还有 USB 设备名、硬件 ID 与调试接口登记的 GUID。手机序列号已替换掉，不含应用列表和通知内容。可以在下面修改。</small></span></label>
     <details><summary>查看 / 修改诊断信息</summary><textarea id="fbdiagtext" class="mono" rows="6" style="margin-top:8px">${esc(diag)}</textarea></details>
     <div id="fbmsg" class="note info hide" style="margin-top:12px"></div>
-    <div class="actions"><button class="btn plain" onclick="openSupport()">企业微信客服</button><button class="btn plain" onclick="openReport()">预览 / 复制诊断</button><button class="btn plain" onclick="closeModal()">取消</button><button class="btn" onclick="sendFeedback()">提交到 GitHub</button></div>`, true);
+    <div class="actions"><button class="btn plain" onclick="openSupport()">开发者支持</button><button class="btn plain" onclick="openReport()">预览 / 复制诊断</button><button class="btn plain" onclick="closeModal()">取消</button><button class="btn" onclick="sendFeedback()">提交到 GitHub</button></div>`, true);
 }
 
 /* ---------- 诊断：仅本地预览与复制，不联网发送 ---------- */
@@ -586,8 +586,8 @@ async function copyReport(){
   m.textContent = ok ? "已复制；可自行粘贴到反馈中。" : "自动复制失败，请选中上方文字手动复制。";
 }
 function openSupport(){
-  modal(`<h3>企业微信客服</h3><p class="lead">微信扫一扫，联系 AiGoodBro 企业客服</p>
-    <div style="width:292px;max-width:100%;padding:16px;margin:18px auto;background:#fff;border-radius:12px"><img src="img/wechat-contact.png" alt="AiGoodBro 企业微信客服二维码" style="display:block;width:260px;max-width:100%;height:auto"></div>
+  modal(`<h3>开发者支持</h3><p class="lead">抖音扫一扫，联系开发者：某厂大牛马 · 带娃的小陈工</p>
+    <div style="width:292px;max-width:100%;padding:16px;margin:18px auto;background:#fff;border-radius:12px"><img src="img/developer-contact.png" alt="开发者抖音二维码" style="display:block;width:260px;max-width:100%;height:auto"></div>
     <div class="actions"><button class="btn" onclick="closeModal()">关闭</button></div>`);
 }
 async function openAbout(){
@@ -598,7 +598,7 @@ async function openAbout(){
     <details style="margin-top:18px"><summary>MIT 开源许可</summary><pre class="report">${esc(a.license)}</pre></details>
     ${a.ui_license ? `<details style="margin-top:12px"><summary>AiGoodBro UI 开源许可</summary><pre class="report">${esc(a.ui_license)}</pre></details>` : ""}
     <div class="row" style="margin-top:16px"><button class="btn ghost" onclick="api.open_url('https://aigoodbro.com')"><span aria-hidden="true">🎁</span> 点击有惊喜 · aigoodbro.com</button></div>
-    <div class="actions"><button class="btn plain" onclick="openSupport()">企业微信客服</button><button class="btn" onclick="closeModal()">关闭</button></div>`, true);
+    <div class="actions"><button class="btn plain" onclick="openSupport()">开发者支持</button><button class="btn" onclick="closeModal()">关闭</button></div>`, true);
 }
 async function sendFeedback(){
   const type = (document.querySelector("input[name=fbt]:checked") || {}).value || "bug";

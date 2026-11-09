@@ -4,15 +4,15 @@ const assert = require('node:assert/strict');
 const { openPage } = require('./page.js');
 
 function supportButton(page, scope){
-  return [...page.document.querySelectorAll(scope+' button')].find(b=>b.textContent.trim()==='企业微信客服');
+  return [...page.document.querySelectorAll(scope+' button')].find(b=>b.textContent.trim()==='开发者支持');
 }
 function assertQr(page){
   const box=page.document.querySelector('#modalbox');
-  assert.equal(box.querySelector('h3').textContent,'企业微信客服');
-  assert.match(box.textContent,/微信扫一扫，联系 AiGoodBro 企业客服/);
+  assert.equal(box.querySelector('h3').textContent,'开发者支持');
+  assert.match(box.textContent,/抖音扫一扫，联系开发者：某厂大牛马 · 带娃的小陈工/);
   const images=box.querySelectorAll('img');
   assert.equal(images.length,1);
-  assert.equal(images[0].getAttribute('src'),'img/wechat-contact.png');
+  assert.equal(images[0].getAttribute('src'),'img/developer-contact.png');
   assert.equal(images[0].style.height,'auto');
   assert.equal(images[0].style.objectFit,'');
 }

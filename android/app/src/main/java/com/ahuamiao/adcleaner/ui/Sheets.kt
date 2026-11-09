@@ -60,7 +60,7 @@ import androidx.compose.ui.unit.dp
 import com.ahuamiao.adcleaner.R
 import org.json.JSONObject
 
-private const val GUIDE_URL = "https://github.com/BLACKIELF/qingjing-aigoodbro/tree/main/docs/%E6%89%8B%E6%9C%BA%E7%89%88%E6%95%99%E7%A8%8B"
+private const val GUIDE_URL = "https://github.com/BLACKIELF/qingjing-aigoodbro"
 
 @Composable
 fun SheetHost(model: AppModel) {
@@ -148,7 +148,7 @@ private fun MoreSheet(model: AppModel) {
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
                 colors = cardRowColors(),
                 leadingContent = { IconTile(R.drawable.ic_headset, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
-            ) { Text("企业微信支持") }
+            ) { Text("开发者支持") }
             SegmentedListItem(
                 onClick = { model.openUrl(GUIDE_URL) },
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
@@ -242,7 +242,7 @@ private fun AboutSheet(model: AppModel) {
                     .verticalScroll(rememberScrollState()),
             )
         }
-        TextButton(onClick = { model.sheet = Sheet.Support }, shapes = ButtonDefaults.shapes()) { Text("企业微信支持") }
+        TextButton(onClick = { model.sheet = Sheet.Support }, shapes = ButtonDefaults.shapes()) { Text("开发者支持") }
         Spacer(Modifier.height(12.dp))
         Text(
             "界面使用 AndroidX / Material；无线调试组件 libadb-android 按 Apache-2.0 许可使用，Shizuku API 与相关依赖保留各自开源许可。",
@@ -256,13 +256,18 @@ private fun AboutSheet(model: AppModel) {
 private fun SupportSheet() {
     val context = LocalContext.current
     val qr = remember(context) {
-        context.assets.open("aac/support/wechat-contact.png").use { BitmapFactory.decodeStream(it).asImageBitmap() }
+        context.assets.open("aac/support/developer-contact.png").use { BitmapFactory.decodeStream(it).asImageBitmap() }
     }
     SheetBody(Modifier.verticalScroll(rememberScrollState())) {
-        SheetTitle("企业微信支持")
-        Text("请使用微信扫一扫，手动添加企业微信。", style = MaterialTheme.typography.bodyMedium)
+        SheetTitle("开发者支持")
+        Text("开发者：某厂大牛马 · 带娃的小陈工", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "请使用抖音扫一扫，或保存图片后在抖音里识别。",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         Spacer(Modifier.height(16.dp))
-        Image(qr, contentDescription = "企业微信支持二维码", contentScale = ContentScale.Fit,
+        Image(qr, contentDescription = "开发者抖音二维码", contentScale = ContentScale.Fit,
             modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().sizeIn(maxWidth = 320.dp))
     }
 }
@@ -367,7 +372,7 @@ private fun FeedbackSheet(model: AppModel, sheet: Sheet.Feedback) {
             .verticalScroll(rememberScrollState()),
     ) {
         SheetTitle("反馈问题")
-        TextButton(onClick = { model.sheet = Sheet.Support }, shapes = ButtonDefaults.shapes()) { Text("企业微信支持") }
+        TextButton(onClick = { model.sheet = Sheet.Support }, shapes = ButtonDefaults.shapes()) { Text("开发者支持") }
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
