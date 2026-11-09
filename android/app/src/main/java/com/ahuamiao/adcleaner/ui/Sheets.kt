@@ -262,7 +262,12 @@ private fun SupportSheet() {
         SheetTitle("开发者支持")
         Text("开发者：某厂大牛马 · 带娃的小陈工", style = MaterialTheme.typography.bodyMedium)
         Text(
-            "请使用抖音扫一扫，或保存图片后在抖音里识别。",
+            "抖音号：72690415302",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            "请使用抖音扫一扫，或保存图片后在抖音里识别；扫不出来也可以在抖音里直接搜抖音号。",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
