@@ -6,23 +6,31 @@ on:
     branches: [main]
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # 同一 PR 重推时取消上一轮；main push 不取消，免得主分支缺 CI 记录
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   # Linux 跑 3.13，Windows 跑 3.12：两版解释器各跑一次，不重复跑同一组合。
   # 3.13 与仓库根的 .python-version 一致；3.12 与两个发版打包同版。3.13 起编译器会剥掉文档字符串
   # 的公共缩进，异常 repr、argparse 帮助同理，同一份源码在两版下可能逐字不同。
   unittest:
     runs-on: ubuntu-latest
+    # 实测 40s；15m 既吞得下镜像缺 adb 时的 apt-get，又能把「挂住」从 6 小时压到一刻钟
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22.23.4"
           cache: npm
       - name: 安装依赖
         run: pip install -r requirements.txt
+      - name: 安装覆盖率工具（与 coverage job 同版本，数据文件格式随版本变）
+        run: pip install coverage==7.17.2
       - name: 安装前端用例依赖（tests/js 用 jsdom，版本按 package-lock.json）
         run: npm ci
       - name: 准备 adb（不用手机，但套件里有用例在入口就解析 adb，缺了直接报「找不到 adb」）
@@ -42,24 +50,40 @@ jobs:
           pip install ruff==0.17.3
           ruff check --select F,E9 tool tests gui android/app/src/main/python
       - name: 设备无关回归测试
-        run: python -m unittest discover -s tests -v
+        # COVERAGE_FILE 的字面量与下面 artifact 的 name / path 必须逐字对上；日志留下来给 summary 解析
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          COVERAGE_FILE=coverage-Linux.data coverage run -m unittest discover -s tests -v 2>&1 | tee unittest.log
+          rc=${PIPESTATUS[0]}
+          python tool/unittest_summary.py unittest.log "Linux / 3.13" "${HEAD_SHA:0:7}" >> "$GITHUB_STEP_SUMMARY" || true
+          exit "$rc"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ runner.os }}
+          path: coverage-${{ runner.os }}.data
+          retention-days: 7
 
   # Windows 专属的用例（expanduser 靠 USERPROFILE、open() 默认 cp1252）只在打 Windows 包时才暴露，
   # 每轮发版才发现太晚，所以 PR 阶段也跑一遍。步骤与 Linux job 对齐，差别只在 adb 从哪来，
   # 以及这里跑 3.12（与打包同版）、Linux 跑 3.13。
   unittest-windows:
     runs-on: windows-latest
+    # 实测 98s；取值理由同 Linux job。ruff 不在这里跑：静态分析与平台无关，只留 Linux 一份副本
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22.23.4"
           cache: npm
       - name: 安装依赖
         run: pip install -r requirements.txt
+      - name: 安装覆盖率工具（与 coverage job 同版本，数据文件格式随版本变）
+        run: pip install coverage==7.17.2
       - name: 安装前端用例依赖（tests/js 用 jsdom，版本按 package-lock.json）
         run: npm ci
       - name: 准备 adb（镜像自带 Android SDK，不额外安装；缺了跟 Linux 一样会有一批用例报「找不到 adb」）
@@ -69,9 +93,82 @@ jobs:
           if (-not (Test-Path $adb)) { throw "找不到 adb：PATH 和 ANDROID_HOME 下都没有" }
           "ADB=$adb" >> $env:GITHUB_ENV
           & $adb version
-      - name: 静态检查（未定义名 / 未使用导入；recipes/ 靠注入作用域执行，查不了）
-        run: |
-          pip install ruff==0.17.3
-          ruff check --select F,E9 tool tests gui android/app/src/main/python
       - name: 设备无关回归测试
-        run: python -m unittest discover -s tests -v
+        # 统一用 bash：summary 解析与 Linux 是同一份脚本，PowerShell 下 VAR=value 和 PIPESTATUS 都不成立
+        shell: bash
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          COVERAGE_FILE=coverage-Windows.data coverage run -m unittest discover -s tests -v 2>&1 | tee unittest.log
+          rc=${PIPESTATUS[0]}
+          python tool/unittest_summary.py unittest.log "Windows / 3.12" "${HEAD_SHA:0:7}" >> "$GITHUB_STEP_SUMMARY" || true
+          exit "$rc"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ runner.os }}
+          path: coverage-${{ runner.os }}.data
+          retention-days: 7
+
+  # 覆盖率是平台相关的：Windows-only 分支在 Linux 上永远 0 覆盖，Windows job 又 skip 掉 POSIX-only
+  # 用例，单平台数字都低估，所以两份数据必须合并。只出报告、不设阈值（omit 清单与阈值都是判断题）。
+  coverage:
+    needs: [unittest, unittest-windows]
+    runs-on: ubuntu-latest
+    # 只有这个 job 要写 checks（挂带百分比的 check run）；两个测试 job 保持只读
+    permissions:
+      contents: read
+      checks: write
+    # 实测这一步 15–20s；取值口径同两个测试 job
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: 安装覆盖率工具（与两个测试 job 同版本，数据格式必须一致）
+        run: pip install coverage==7.17.2
+      - name: 取两份数据（平铺到同一目录，文件名不同不会冲突）
+        uses: actions/download-artifact@v8
+        with:
+          path: cov
+          merge-multiple: true
+      - name: 合并并出报告
+        id: report
+        # 目录参数只认 `.coverage*` 开头的文件名，两份 `coverage-Linux.data` / `coverage-Windows.data`
+        # 会被当成不存在（实测报 "No data to combine"）；让 bash 先展开 glob 成显式文件路径
+        run: |
+          coverage combine cov/coverage-*.data
+          coverage report --show-missing
+          coverage xml -o coverage.xml
+          percent="$(coverage report --format=total)"
+          echo "percent=$percent" >> "$GITHUB_OUTPUT"
+          {
+            echo "### 覆盖率（Linux + Windows 合并）"
+            echo
+            echo "**总行覆盖率 ${percent}%** —— 无阈值，仅供参考。"
+            echo
+            coverage report --format=markdown
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 7
+      # check 名里带百分比，PR 的 Checks 区一眼可见。fork PR 的 GITHUB_TOKEN 只读，建 check 会失败，直接跳过
+      - name: 挂带百分比的 check
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PERCENT: ${{ steps.report.outputs.percent }}
+        run: |
+          jq -n --arg name "coverage ${PERCENT}%" --arg sha "$HEAD_SHA" --arg pct "$PERCENT" '{
+            name: $name,
+            head_sha: $sha,
+            status: "completed",
+            conclusion: "success",
+            output: {
+              title: ("总行覆盖率 " + $pct + "%"),
+              summary: "Linux + Windows 合并后的总行覆盖率。无阈值，仅供参考；完整表格见本次 run 的 job summary。"
+            }
+          }' | gh api -X POST "repos/${GITHUB_REPOSITORY}/check-runs" --input -

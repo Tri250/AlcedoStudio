@@ -1,5 +1,5 @@
 {
-  "name": "android-ad-cleaner-web-tests",
+  "name": "aiclean-web-tests",
   "private": true,
   "description": "gui/web 前端行为测试（由 tests/test_web_client.py 代跑）",
   "scripts": {

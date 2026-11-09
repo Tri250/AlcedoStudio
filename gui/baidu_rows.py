@@ -80,7 +80,7 @@ USAGE = ("使用\n----\n1. 手机打开开发者模式和 USB 调试（客户端
          "4. 做完后关闭开发者模式，客户端完成页有按钮。\n\n"
          "第一次打开时，电脑上没有 adb 的话，客户端会提示从 Google 官网下载（约 10 MB）。\n\n")
 USAGE_ANDROID = ("使用\n----\n不用连电脑。第一次打开按页面做 3 个设置，之后点「一键去广告」。\n"
-                 "图文和视频教程：https://ahuamiao.com/sites/other/android-tutorial.html\n\n")
+                 "图文和视频教程：https://github.com/Tri250/AlcedoStudio/tree/main/docs/手机版教程\n\n")
 CHECK = {"mac": "shasum -a 256 文件名（终端）", "win-setup": "Get-FileHash 文件名（PowerShell）", "win-zip": "Get-FileHash 文件名（PowerShell）",
          "android": "在电脑上算：shasum -a 256 文件名（Mac 终端）或 Get-FileHash 文件名（PowerShell）"}
 
@@ -107,7 +107,7 @@ def legacy(ver, out, sums_path):
         with open(os.path.join(out, folder, "安装说明.txt"), "w", encoding="utf-8") as f:
             f.write(f"Ai.Clean {ver}\n{INTRO}\n适用：{title}（{sub}）。\n\n安装\n----\n{steps}\n\n"
                     + (USAGE_ANDROID if kind == "android" else USAGE) +
-                    "更多\n----\n官网：https://ahuamiao.com/sites/other/android-ad-removal-intro.html\n"
+                    "更多\n----\n官网：https://aigoodbro.com\n"
                     "源代码：https://github.com/Tri250/AlcedoStudio\n"
                     + ("遇到问题：App 右上角「⋯」→「反馈问题」\n\n" if kind == "android"
                        else "遇到问题：客户端左下角「反馈问题」或「上报错误日志」\n\n") +

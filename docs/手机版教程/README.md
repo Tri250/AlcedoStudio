@@ -14,7 +14,7 @@
 
 ## 下载
 
-从[官网下载区](https://ahuamiao.com/sites/other/android-ad-removal-intro.html#download)下载，也可以从 [GitHub](https://github.com/Tri250/AlcedoStudio/releases/latest) 下载。文件名是 `AiClean-<版本>-android-arm64.apk`。下载好后，往下做那 3 个设置。
+从 [GitHub Releases](https://github.com/Tri250/AlcedoStudio/releases/latest) 下载。文件名是 `AiClean-<版本>-android-arm64.apk`。下载好后，往下做那 3 个设置。
 
 ## 开始之前
 

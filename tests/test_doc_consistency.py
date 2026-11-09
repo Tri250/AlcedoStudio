@@ -79,8 +79,8 @@ class LintCommandTests(unittest.TestCase):
             with self.subTest(path=str(path.relative_to(ROOT))):
                 self.assertEqual(ruff_targets(path.read_text(encoding="utf-8")), expected)
         ci = ruff_targets((ROOT / ".github/workflows/test.yml").read_text(encoding="utf-8"))
-        self.assertEqual(len(ci), 2, "CI 应当两个 job 各跑一次 ruff，读到 %d 条" % len(ci))
-        self.assertEqual(ci, [expected[0], expected[0]])
+        self.assertEqual(len(ci), 1, "静态分析与平台无关，CI 只在 Linux job 跑一次 ruff，读到 %d 条" % len(ci))
+        self.assertEqual(ci, [expected[0]])
 
 
 class BrandTapsDocTests(unittest.TestCase):

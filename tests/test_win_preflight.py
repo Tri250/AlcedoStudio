@@ -1,5 +1,5 @@
 """Windows 启动失败归因：缺 WebView2 / 程序文件带 MOTW / 本地 dll 被 .NET 判成远程来源 / 其他
-（#228、#597）。
+（#228、#597）；以及免安装版启动时旧名安装还在的检测（#872）。
 
 注册表读取与 ADS 探测都从外面注入，所以这套判定在 macOS 上也能跑。
 """
@@ -46,7 +46,7 @@ def fake_read(values):
 
 
 def always_raise(error):
-    def read(hive, path):
+    def read(*_args):
         raise error
 
     return read
@@ -317,3 +317,5 @@ class StartupFailedWiringTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
