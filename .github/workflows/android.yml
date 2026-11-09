@@ -73,9 +73,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" \
-            --title "清静 · AiGoodBro ${GITHUB_REF_NAME}" \
-            --generate-notes \
+          # build-windows 工作流也在同一标签上建 Release，谁先跑完谁建，后到的只补产物
+          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || \
+            gh release create "${GITHUB_REF_NAME}" \
+              --title "清静 · AiGoodBro ${GITHUB_REF_NAME}" \
+              --generate-notes
+          gh release upload "${GITHUB_REF_NAME}" --clobber \
             delivery/Qingjing-AiGoodBro-1.0.3-1108v4-android-arm64.apk \
             delivery/SHA256SUMS-android.txt \
             delivery/android-package-info.txt

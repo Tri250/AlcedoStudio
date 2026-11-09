@@ -1,8 +1,10 @@
 # Windows 版：打包、冒烟测试、生成安装程序和便携版 zip。
-# 手动运行（Actions → build-windows → Run workflow），或推送 v* 标签时运行并上传到对应 Release。
+# 手动运行（Actions → build-windows → Run workflow），或推送 v* 标签时自动运行并上传到对应 Release。
 name: build-windows
 on:
   workflow_dispatch:
+  push:
+    tags: ['v*']
 permissions:
   contents: write
 jobs:
@@ -61,12 +63,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "${{ github.ref_name }}"
-          $release = gh release view $tag --json isDraft,assets | ConvertFrom-Json
-          if ($LASTEXITCODE -ne 0) { throw "请先创建对应的 Release 草稿" }
-          if (-not $release.isDraft) {
-            Write-Host "Release 已公开，保留已验证文件及 SHA256，不用重建产物覆盖。"
-            exit 0
+          # 安卓工作流也在同一标签上建 Release，谁先跑完谁建，后到的直接往里传
+          gh release view $tag --json id 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --title "清静 · AiGoodBro $tag" --generate-notes
           }
+          $release = gh release view $tag --json assets | ConvertFrom-Json
           foreach ($file in Get-ChildItem gui/dist/*.zip, gui/dist/*-setup.exe) {
             if ($release.assets.name -contains $file.Name) {
               Write-Host "已存在，保留：$($file.Name)"
