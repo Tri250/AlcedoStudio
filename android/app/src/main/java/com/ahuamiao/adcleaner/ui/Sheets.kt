@@ -2,9 +2,8 @@
 
 package com.ahuamiao.adcleaner.ui
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
-import android.graphics.BitmapFactory
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -51,16 +49,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.ahuamiao.adcleaner.R
 import org.json.JSONObject
 
-private const val GUIDE_URL = "https://github.com/BLACKIELF/qingjing-aigoodbro"
+// 「使用说明」指向用户指定的项目仓库教程文档链接
+private const val GUIDE_URL =
+    "https://github.com/Tri250/AlcedoStudio/blob/main/docs/%E6%89%8B%E6%9C%BA%E7%89%88%E6%95%99%E7%A8%8B/brand-taps.json"
 
 @Composable
 fun SheetHost(model: AppModel) {
@@ -252,12 +253,16 @@ private fun AboutSheet(model: AppModel) {
     }
 }
 
+/** 开发者抖音主页直达链接与分享口令（口令必须整段复制才有效）。 */
+private const val DouyinUrl = "https://v.douyin.com/MMTUX7QHyO4/"
+private const val DouyinCode =
+    "8- 长按复制此条消息，打开抖音搜索，查看TA的更多作品。 https://v.douyin.com/MMTUX7QHyO4/ 3@8.com :7pm"
+
 @Composable
 private fun SupportSheet() {
     val context = LocalContext.current
-    val qr = remember(context) {
-        context.assets.open("aac/support/developer-contact.png").use { BitmapFactory.decodeStream(it).asImageBitmap() }
-    }
+    val clipboard = LocalClipboardManager.current
+    val uri = LocalUriHandler.current
     SheetBody(Modifier.verticalScroll(rememberScrollState())) {
         SheetTitle("开发者支持")
         Text("开发者：某厂大牛马 · 带娃的小陈工", style = MaterialTheme.typography.bodyMedium)
@@ -266,14 +271,39 @@ private fun SupportSheet() {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        Spacer(Modifier.height(16.dp))
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ) {
+            SelectionContainer {
+                Text(
+                    DouyinCode,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(16.dp),
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            TextButton(
+                onClick = {
+                    clipboard.setText(AnnotatedString(DouyinCode))
+                    Toast.makeText(context, "口令已复制，打开抖音即可查看主页", Toast.LENGTH_SHORT).show()
+                },
+                shapes = ButtonDefaults.shapes(),
+            ) { Text("复制口令") }
+            TextButton(onClick = { uri.openUri(DouyinUrl) }, shapes = ButtonDefaults.shapes()) {
+                Text("打开抖音主页")
+            }
+        }
+        Spacer(Modifier.height(4.dp))
         Text(
-            "请使用抖音扫一扫，或保存图片后在抖音里识别；扫不出来也可以在抖音里直接搜抖音号。",
-            style = MaterialTheme.typography.bodyMedium,
+            "复制整段口令后打开抖音，会自动弹出主页卡片；手机上也可以直接点「打开抖音主页」。",
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(16.dp))
-        Image(qr, contentDescription = "开发者抖音二维码", contentScale = ContentScale.Fit,
-            modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().sizeIn(maxWidth = 320.dp))
     }
 }
 
