@@ -56,8 +56,15 @@ jobs:
           gradle --no-daemon --console=plain assembleRelease
       - name: Verify signature and application identity
         run: |
+          # 产物名跟 tag 走（v1.0.4-1109v1 → 1.0.4-1109v1）；手动触发时退回 gui/version.py 的版本号
+          REL="${GITHUB_REF_NAME#v}"
+          case "${GITHUB_REF_NAME}" in
+            v*) ;;
+            *) REL="$(python3 gui/version.py)" ;;
+          esac
+          echo "REL=$REL" >> "$GITHUB_ENV"
           mkdir -p delivery
-          cp "$QINGJING_ANDROID_BUILD_DIR/outputs/apk/release/app-release.apk" delivery/Qingjing-AiGoodBro-1.0.3-1108v4-android-arm64.apk
+          cp "$QINGJING_ANDROID_BUILD_DIR/outputs/apk/release/app-release.apk" "delivery/Qingjing-AiGoodBro-$REL-android-arm64.apk"
           "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --verbose --print-certs delivery/*.apk
           "$ANDROID_HOME/build-tools/37.0.0/aapt" dump badging delivery/*.apk | tee delivery/android-package-info.txt
           grep -q "package: name='com.aigoodbro.qingjing'" delivery/android-package-info.txt
@@ -65,7 +72,7 @@ jobs:
           sha256sum *.apk > SHA256SUMS-android.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Qingjing-AiGoodBro-android-1108v4
+          name: Qingjing-AiGoodBro-android-${{ env.REL }}
           path: delivery/
           if-no-files-found: error
       - name: Publish release
@@ -79,6 +86,6 @@ jobs:
               --title "清静 · AiGoodBro ${GITHUB_REF_NAME}" \
               --generate-notes
           gh release upload "${GITHUB_REF_NAME}" --clobber \
-            delivery/Qingjing-AiGoodBro-1.0.3-1108v4-android-arm64.apk \
+            "delivery/Qingjing-AiGoodBro-${REL}-android-arm64.apk" \
             delivery/SHA256SUMS-android.txt \
             delivery/android-package-info.txt

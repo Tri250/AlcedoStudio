@@ -178,78 +178,32 @@ private fun MoreSheet(model: AppModel) {
 
 @Composable
 private fun AboutSheet(model: AppModel) {
-    val context = LocalContext.current
-    val license = remember(context) {
-        context.assets.open("aac/legal/LICENSE").bufferedReader().use { it.readText() }
-    }
-    val uiLicense = remember(context) {
-        context.assets.open("aac/legal/AiGoodBro-UI-MIT.txt").bufferedReader().use { it.readText() }
-    }
     SheetBody(Modifier.verticalScroll(rememberScrollState())) {
         SheetTitle("清静 · AiGoodBro")
         Text("版本 ${model.version} · 安卓版", style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(12.dp))
         Text(
-            "帮助你关闭安卓系统推荐、广告开关和营销通知。执行前确认项目，保留正常功能与还原入口。",
+            "帮你把安卓手机里的广告、推荐和营销推送关掉，让手机安静一点。改动前逐项确认，正常功能不受影响，随时可一键还原。",
             style = MaterialTheme.typography.bodyMedium,
         )
         Spacer(Modifier.height(16.dp))
-        Text("开源致谢", style = MaterialTheme.typography.titleMediumEmphasized)
+        Text("它能做什么", style = MaterialTheme.typography.titleMediumEmphasized)
         Text(
-            "本软件基于 android-ad-cleaner 开发。原作者：肉呆大魔王（rddmwmddr）。AiGoodBro 维护此衍生版本的品牌与适配。",
+            "· 系统推荐与广告开关：按机型适配，逐项确认后关闭",
             style = MaterialTheme.typography.bodySmall,
         )
-        TextButton(
-            onClick = { model.openUrl("https://github.com/rddmwmddr/android-ad-cleaner") },
-            shapes = ButtonDefaults.shapes(),
-        ) {
-            Text("查看上游项目")
-        }
-        TextButton(
-            onClick = { model.openUrl("https://github.com/BLACKIELF/qingjing-aigoodbro") },
-            shapes = ButtonDefaults.shapes(),
-        ) {
-            Text("查看本项目源码")
-        }
-        TextButton(
-            onClick = { model.openUrl("https://aigoodbro.com") },
-            shapes = ButtonDefaults.shapes(),
-        ) {
-            Text("访问官网 · aigoodbro.com")
-        }
-        Text("MIT 许可证", style = MaterialTheme.typography.titleMediumEmphasized)
-        SelectionContainer {
-            Text(
-                license,
-                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                // 许可证很长，限高单独滚动，不然这一页能拉出好几屏
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .heightIn(max = 240.dp)
-                    .verticalScroll(rememberScrollState()),
-            )
-        }
-        Spacer(Modifier.height(12.dp))
-        Text("AiGoodBro 界面 MIT 许可证", style = MaterialTheme.typography.titleMediumEmphasized)
-        SelectionContainer {
-            Text(
-                uiLicense,
-                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .heightIn(max = 240.dp)
-                    .verticalScroll(rememberScrollState()),
-            )
-        }
-        TextButton(onClick = { model.sheet = Sheet.Support }, shapes = ButtonDefaults.shapes()) { Text("开发者支持") }
-        Spacer(Modifier.height(12.dp))
         Text(
-            "界面使用 AndroidX / Material；无线调试组件 libadb-android 按 Apache-2.0 许可使用，Shizuku API 与相关依赖保留各自开源许可。",
+            "· 营销通知：精准关闭推送渠道，快递、更新等正常通知保留",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        Text(
+            "· 快应用与广告组件：挂起不卸载，随时恢复",
+            style = MaterialTheme.typography.bodySmall,
+        )
+        Spacer(Modifier.height(16.dp))
+        TextButton(onClick = { model.sheet = Sheet.Support }, shapes = ButtonDefaults.shapes()) {
+            Text("开发者支持")
+        }
     }
 }
 
