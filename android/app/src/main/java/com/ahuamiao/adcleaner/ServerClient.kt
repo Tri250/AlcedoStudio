@@ -98,6 +98,13 @@ class ServerClient(input: InputStream, private val output: OutputStream, private
             return job
         }
         pending[job.id] = job
+        if (closed) {
+            // 复查：reader 线程可能在第一次检查之后、入队之前刚断开（closed=true 先于清队列），
+            // 这条会落在清理之后永远没人回包。入队后再查一次，落空的就地补完成。
+            pending.remove(job.id)
+            job.complete(-1, ByteArray(0), "命令服务已断开".toByteArray())
+            return job
+        }
         try {
             write(job.id, type, body)
         } catch (e: Exception) {

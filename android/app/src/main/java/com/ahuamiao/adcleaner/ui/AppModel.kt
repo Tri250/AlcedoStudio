@@ -538,8 +538,11 @@ class AppModel(
         scope.launch {
             restoreResult = try {
                 backend.call("restore", serial, what)?.toString().orEmpty().trim().ifEmpty { "已处理。" }
-            } catch (e: EngineError) {
-                e.message.orEmpty()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // 只认 EngineError 会漏掉引擎之外的意外（JSON、类型、解释器状态），漏掉时面板永远转圈
+                e.message.orEmpty().ifEmpty { e.toString() }
             }
             restoring = false
         }
@@ -566,8 +569,11 @@ class AppModel(
                 } else {
                     Notice("读屏连接正常", o.optString("message"))
                 }
-            } catch (e: EngineError) {
-                Notice("检查未完成", e.message.orEmpty())
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // 只认 EngineError 会漏掉引擎之外的意外（JSON、类型），漏掉的都成了闪退
+                Notice("检查未完成", e.message.orEmpty().ifEmpty { e.toString() })
             }
         }
     }
@@ -603,8 +609,11 @@ class AppModel(
         scope.launch {
             val payload = try {
                 backend.call("report_payload") as JSONObject
-            } catch (e: EngineError) {
-                notice = Notice("读取错误日志", e.message.orEmpty())
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // 只认 EngineError 会漏掉引擎之外的意外（JSON、类型），漏掉的都成了闪退
+                notice = Notice("读取错误日志", e.message.orEmpty().ifEmpty { e.toString() })
                 return@launch
             }
             val empty = (payload.optJSONArray("steps")?.length() ?: 0) == 0 && payload.optString("log").isBlank()
@@ -624,8 +633,11 @@ class AppModel(
             try {
                 val copied = backend.call("copy_text", payload.toString(2)) as? Boolean == true
                 done(if (copied) "日志已复制，请自行选择分享位置。" else "复制失败，请重试。", copied)
-            } catch (e: EngineError) {
-                done(e.message.orEmpty(), false)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // 只认 EngineError 会漏掉引擎之外的意外（JSON、类型），漏掉时按钮一直转圈或闪退
+                done(e.message.orEmpty().ifEmpty { e.toString() }, false)
             }
         }
     }

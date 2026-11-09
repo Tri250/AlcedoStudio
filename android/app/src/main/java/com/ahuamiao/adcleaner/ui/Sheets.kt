@@ -59,9 +59,9 @@ import androidx.compose.ui.unit.dp
 import com.ahuamiao.adcleaner.R
 import org.json.JSONObject
 
-// 「使用说明」指向用户指定的项目仓库教程文档链接
+// 「使用说明」指向项目仓库的教程文档（docs/手机版教程/README.md，同名目录里的 brand-taps.json 是数据表不是教程）
 private const val GUIDE_URL =
-    "https://github.com/Tri250/AlcedoStudio/blob/main/docs/%E6%89%8B%E6%9C%BA%E7%89%88%E6%95%99%E7%A8%8B/brand-taps.json"
+    "https://github.com/Tri250/AlcedoStudio/blob/main/docs/%E6%89%8B%E6%9C%BA%E7%89%88%E6%95%99%E7%A8%8B/README.md"
 
 @Composable
 fun SheetHost(model: AppModel) {
