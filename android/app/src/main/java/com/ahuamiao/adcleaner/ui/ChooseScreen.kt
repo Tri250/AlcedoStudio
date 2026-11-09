@@ -122,8 +122,18 @@ fun ChooseScreen(model: AppModel) {
             contentAlignment = Alignment.TopCenter,
         ) {
             if (selection == null) {
+                // 光一个转圈看起来像空白页：说清正在做什么，并留一条退路
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    ContainedLoadingIndicator(Modifier.size(72.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        ContainedLoadingIndicator(Modifier.size(72.dp))
+                        Spacer(Modifier.height(16.dp))
+                        Text(
+                            "正在准备检测结果",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = colors.onSurfaceVariant,
+                        )
+                        TextButton(onClick = model::goHomeNow, shapes = ButtonDefaults.shapes()) { Text("取消") }
+                    }
                 }
             } else {
                 ChooseList(model, selection)

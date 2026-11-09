@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -116,7 +117,18 @@ class AppModel(
     /** 换一条页面流程：上一条没做完的就此作废，它的结果不会再改页面。 */
     private fun flow(block: suspend CoroutineScope.() -> Unit) {
         flow?.cancel()
-        flow = scope.launch(block = block)
+        flow = scope.launch {
+            try {
+                block()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // 流程不许悄悄死掉：检测、扫描里没料到的错误也要落成看得见的提示，
+                // 不然界面会停在「正在准备」或一个只剩转圈的空白确认页上
+                notice = Notice("操作没有完成", e.message.orEmpty().ifEmpty { e.toString() },
+                    confirm = "复制诊断", onConfirm = ::copyDiagnostics, dismiss = "好")
+            }
+        }
     }
 
     fun start() {
@@ -308,6 +320,12 @@ class AppModel(
         } catch (e: EngineError) {
             notice = Notice("检测失败", e.message.orEmpty())
             return null
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // 只认 EngineError 会漏掉引擎之外的意外（JSON、类型、解释器状态），漏掉的都成了空白页
+            notice = Notice("检测失败", e.message.orEmpty().ifEmpty { e.toString() })
+            return null
         }
         if (o.has("error")) {
             notice = Notice("检测失败", o.optString("error"))
@@ -327,6 +345,10 @@ class AppModel(
             }
         } catch (e: EngineError) {
             selection.scan = ScanState.Failed(e.message.orEmpty(), e.message.orEmpty())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            selection.scan = ScanState.Failed("通知扫描没有完成", e.message.orEmpty().ifEmpty { e.toString() })
         }
     }
 

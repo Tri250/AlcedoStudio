@@ -14,7 +14,7 @@ except ImportError:
     import winpreflight
 
 APP_NAME = "Ai.Clean"
-VERSION = "1.0.6"
+VERSION = "1.0.7"
 FROZEN = getattr(sys, "frozen", False)
 BASE = getattr(sys, "_MEIPASS", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TOOL = os.path.join(BASE, "tool")
@@ -1184,7 +1184,7 @@ class Api:
             license_text = license_file.read_text(encoding="utf-8")
         except OSError:
             license_text = "未找到随附的 MIT 许可文件，请查看本项目源码中的 LICENSE。"
-        return {"name": APP_NAME, "version": VERSION, "build": "1109v4",
+        return {"name": APP_NAME, "version": VERSION, "build": "1109v5",
                 "author": "Ai.Clean",
                 "project_url": "https://github.com/Tri250/AlcedoStudio",
                 "license": license_text,
