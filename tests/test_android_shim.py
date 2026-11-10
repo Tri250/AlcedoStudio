@@ -329,6 +329,11 @@ class BackgroundScreenTest(unittest.TestCase):
             self.assertEqual(screen.rewrite(cmd), "true", cmd)
         self.assertEqual(screen.rewrite("am start -n a/.B; input keyevent HOME"), "am start --display 7 -f 0x18000000 -n a/.B; true")
 
+    def test_digit_keys_are_not_mistaken_for_home(self):
+        # KEYCODE_3 是数字 3 键（键码 10），裸 3 才是 HOME：误吞会把后台屏上的按键静默丢掉
+        for cmd in ("input keyevent KEYCODE_3", "input keyevent 30", "input keyevent KEYCODE_224"):
+            self.assertEqual(screen.rewrite(cmd), f"input -d 7 {cmd[len('input '):]}", cmd)
+
     def test_focus_and_lock_queries_read_only_this_screen(self):
         cmd = screen.rewrite("dumpsys window | grep -E 'mCurrentFocus|mFocusedApp' | sed -n '1,4p'")
         self.assertIn("dumpsys window displays", cmd)

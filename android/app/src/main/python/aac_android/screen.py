@@ -150,8 +150,10 @@ def dead():
 
 # 只会作用到主屏的命令，后台屏下不发：
 # HOME——后台屏没有桌面，发了把用户正在用的 App 送回桌面；WAKEUP——后台屏不睡，点亮的是主屏；
-# 收起通知栏——后台屏没有通知栏，收起的是用户的
-SKIP = re.compile(r"\binput keyevent (?:--longpress )?(?:KEYCODE_)?(?:HOME|WAKEUP|3|224)\b|\bcmd statusbar collapse\b")
+# 收起通知栏——后台屏没有通知栏，收起的是用户的。
+# KEYCODE_ 必须紧跟 HOME / WAKEUP：裸数字 3 / 224 才是键码值，KEYCODE_3 是数字 3 键（10），不是 HOME
+SKIP = re.compile(r"\binput keyevent (?:--longpress )?(?:KEYCODE_(?:HOME|WAKEUP)|HOME|WAKEUP|3|224)\b"
+                  r"|\bcmd statusbar collapse\b")
 NEW_TASK, MULTIPLE_TASK = 0x10000000, 0x08000000
 
 
