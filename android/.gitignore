@@ -1,0 +1,5 @@
+# 本地构建（非标准 buildDir）产生的中间目录
+generated/
+intermediates/
+kotlin/
+outputs/

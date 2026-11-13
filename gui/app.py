@@ -14,7 +14,7 @@ except ImportError:
     import winpreflight
 
 APP_NAME = "Ai.Clean"
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 FROZEN = getattr(sys, "frozen", False)
 BASE = getattr(sys, "_MEIPASS", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TOOL = os.path.join(BASE, "tool")
