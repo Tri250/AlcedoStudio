@@ -477,7 +477,7 @@ class AppModel(
     }
 
     /** 语音播报：说哪句由 view.py 的 announcements 给，这里只管说出来；播报出错不影响执行。 */
-    private fun announce(prev: JSONObject?, raw: JSONObject, run: RunProgress) {
+    private suspend fun announce(prev: JSONObject?, raw: JSONObject, run: RunProgress) {
         if (!voiceOn) return
         runCatching {
             (backend.call("view.announcements", prev ?: JSONObject.NULL, raw) as? JSONArray)
