@@ -112,7 +112,6 @@ class AppModel(
     var visible by mutableStateOf(true)
         private set
 
-    private var pendingWebsite = false
     private var userRun = false
     private var booted = false
     private var stallNoticed = false
@@ -179,10 +178,6 @@ class AppModel(
     fun setForeground(on: Boolean) {
         visible = on
         syncSetupNotice()
-        if (on && pendingWebsite) {
-            pendingWebsite = false
-            openUrl("https://aigoodbro.com")
-        }
     }
 
     /**
@@ -428,18 +423,6 @@ class AppModel(
             if (run.finished) {
                 mode.cancel()
                 show(Screen.Done(run))
-                if (userRun && run.outcome == Outcome.Ok && !run.cancel && run.results.all { it.ok && !it.stopped } && run.results.any { result ->
-                    !result.skipped && when (result.kind) {
-                        "recipe" -> Regex("关了 ([1-9]\\d*) 个开关").containsMatchIn(result.summary)
-                        "channels" -> Regex("关了 ([1-9]\\d*) 个渠道").containsMatchIn(result.summary)
-                        "ads" -> result.tail.any { "：已挂起" in it }
-                        "quickapp" -> true
-                        else -> false
-                    }
-                }) {
-                    pendingWebsite = true
-                    if (visible) { pendingWebsite = false; openUrl("https://aigoodbro.com") }
-                }
                 userRun = false
                 return@coroutineScope
             }

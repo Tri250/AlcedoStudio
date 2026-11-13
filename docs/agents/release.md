@@ -51,7 +51,7 @@ sed -n '/^## 未发布/,/^## /p' CHANGELOG.md
 
 感谢 <本期贡献者>。
 
-[完整更新记录](https://github.com/Tri250/AlcedoStudio/blob/main/CHANGELOG.md) · [官网](https://aigoodbro.com)
+[完整更新记录](https://github.com/Tri250/AlcedoStudio/blob/main/CHANGELOG.md)
 ```
 
 写正文时的三条硬约束：

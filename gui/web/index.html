@@ -420,7 +420,7 @@ async function go(){
   }
   const r = await api.start(S.serial, plan);
   if (r.error){ modal(`<h3>没法开始</h3><p>${esc(r.error)}</p><div class="actions"><button class="btn" onclick="closeModal()">好</button></div>`); return; }
-  S.plan = plan; S.logNext = 0; S.cleanupRun = {eligible: true, opened: false}; showRun();
+  S.plan = plan; S.logNext = 0; showRun();
 }
 function askSuperClean(){
   modal(`<h3>开始超级 Ai.Clean？</h3><p class="lead">自动处理已适配的广告开关、明确的营销通知、可关闭的快应用和已识别的广告组件。开始前会备份，服务通知和受保护的组件会保留。</p><div class="actions"><button class="btn plain" onclick="closeModal()">取消</button><button class="btn" onclick="runSuperClean()">开始清理</button></div>`);
@@ -439,7 +439,6 @@ async function runSuperClean(){
   }
   closeModal();
   S.logNext = 0;
-  S.cleanupRun = {eligible: true, opened: false};
   showRun();
 }
 function showRun(){
@@ -524,18 +523,6 @@ function summarize(res){
   if (/插电常亮未改动/.test(t)) return "插电常亮未改动";
   return res.tail.filter(Boolean).slice(-1)[0] || "";
 }
-// Only a user-started, accepted cleanup can open the website; rendering a result cannot arm it.
-function openCleanupWebsite(r){
-  const run = S.cleanupRun;
-  if (!run || !run.eligible || run.opened || r.running) return;
-  run.eligible = false;
-  const results = r.results || [];
-  const succeeded = !r.cancel && results.length && results.every(x => x.rc === 0 && !x.stopped);
-  const cleaned = results.some(x => ["recipe", "channels", "quickapp", "ads"].includes(x.kind) && x.rc === 0 && !x.skipped && !x.stopped);
-  if (!succeeded || !cleaned) return;
-  run.opened = true;
-  api.open_url("https://aigoodbro.com").catch(() => {});
-}
 function showDone(r){
   setStep(5);
   const ok = r.results.every(x => x.rc === 0) && !r.cancel;
@@ -551,7 +538,6 @@ function showDone(r){
       <div class="row"><button class="btn" onclick="askDevOff()">帮我关闭</button><button class="btn plain" onclick="selfOff()">我在手机上自己关</button></div></div>
     ${failed ? `<div class="note bad">有步骤没成功。<a href="#" onclick="openReport();return false">预览 / 复制诊断</a>（只在本机显示，不联网发送），或<a href="#" onclick="openFeedback('bug');return false">到 GitHub 反馈</a>。</div>` : ""}
     <details class="card"><summary>查看完整日志</summary><div class="log" style="height:260px">${esc(document.querySelector("#log")?.textContent || "")}</div></details>`;
-  openCleanupWebsite(r);
 }
 /* 重试没做成的步骤（#638）：后台按失败段名重排计划，界面只是再走一次执行页。
    按下就置灰：连点两下时第二次会撞上「已有任务在运行」，那个报错会盖在已经跑起来的重试上。 */
@@ -627,7 +613,6 @@ async function openAbout(){
     <div class="actions"><button class="btn ghost" onclick="api.open_url('${esc(a.project_url)}')">项目主页</button></div>
     <details style="margin-top:18px"><summary>MIT 开源许可</summary><pre class="report">${esc(a.license)}</pre></details>
     ${a.ui_license ? `<details style="margin-top:12px"><summary>Ai.Clean UI 开源许可</summary><pre class="report">${esc(a.ui_license)}</pre></details>` : ""}
-    <div class="row" style="margin-top:16px"><button class="btn ghost" onclick="api.open_url('https://aigoodbro.com')"><span aria-hidden="true">🎁</span> 点击有惊喜 · aigoodbro.com</button></div>
     <div class="actions"><button class="btn plain" onclick="openSupport()">开发者支持</button><button class="btn" onclick="closeModal()">关闭</button></div>`, true);
 }
 async function sendFeedback(){

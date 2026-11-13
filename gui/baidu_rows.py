@@ -107,7 +107,7 @@ def legacy(ver, out, sums_path):
         with open(os.path.join(out, folder, "安装说明.txt"), "w", encoding="utf-8") as f:
             f.write(f"Ai.Clean {ver}\n{INTRO}\n适用：{title}（{sub}）。\n\n安装\n----\n{steps}\n\n"
                     + (USAGE_ANDROID if kind == "android" else USAGE) +
-                    "更多\n----\n官网：https://aigoodbro.com\n"
+                    "更多\n----\n"
                     "源代码：https://github.com/Tri250/AlcedoStudio\n"
                     + ("遇到问题：App 右上角「⋯」→「反馈问题」\n\n" if kind == "android"
                        else "遇到问题：客户端左下角「反馈问题」或「上报错误日志」\n\n") +
