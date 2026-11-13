@@ -9,6 +9,7 @@ chan-scan 读这份名单把这些渠道排除在外，只报一句计数 ——
 换系统或 App 升级后渠道可能重新暴露，所以整份名单可以删掉重建（scan --reset）。
 """
 import os
+import contextlib
 
 PREFIX = "ui-hidden-"
 
@@ -64,7 +65,5 @@ class UiHidden:
         return len(new)
 
     def clear(self):
-        try:
+        with contextlib.suppress(OSError):
             os.remove(self.path)
-        except OSError:
-            pass

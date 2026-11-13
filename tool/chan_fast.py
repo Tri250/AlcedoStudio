@@ -9,13 +9,11 @@
   chan_fast.py -s SERIAL on  清单.tsv      还原
 清单.tsv：包名<TAB>渠道id<TAB>说明[<TAB>应用名]，一行一个；# 开头是注释。
 """
-import hashlib, re, shlex, sys, time, os
+import contextlib, hashlib, re, shlex, sys, time, os
 from dataclasses import dataclass
 for _st in (sys.stdout, sys.stderr):
-    try:
+    with contextlib.suppress(Exception):
         _st.reconfigure(encoding="utf-8", errors="replace")   # Windows 控制台默认不是 UTF-8
-    except Exception:
-        pass
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fast import Phone, ScreenLocked, pause_point
 from row import PATH_DEPTH, SAME_LINE, bounds, disabled_at as row_disabled_at, link, own, skeleton
@@ -75,10 +73,8 @@ def app_labels(reader, packages):
         pass                    # 只影响显示：读不到就显示包名，不让扫描失败
     finally:
         if pushed:
-            try:
+            with contextlib.suppress(Exception):
                 reader.shell(f"rm -f {LABELS_REMOTE}")
-            except Exception:
-                pass
     return out
 
 RETRY_MAX = 10
@@ -1211,10 +1207,9 @@ def run(a):
             if p is not None:
                 p.close()
             if stay_on is not None and not ON_PHONE:      # 手机版没改过这项设置，也就没有要改回的（#731）
-                try:
+                # 手机已断开：收尾一步会再改回
+                with contextlib.suppress(RuntimeError):
                     reader.shell(f"settings put global stay_on_while_plugged_in {stay_on}")
-                except RuntimeError:
-                    pass                        # 手机已断开：收尾一步会再改回
             if p is not None:
                 failures += restore_report(reader, modes)
         print(f"拨了 {changed} 个，{time.time()-t0:.0f} 秒")

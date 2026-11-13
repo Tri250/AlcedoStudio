@@ -10,6 +10,7 @@
 import re
 import sys
 from pathlib import Path
+import contextlib
 
 RAN = re.compile(r"^Ran (\d+) tests? in ([\d.]+)s", re.MULTILINE)
 VERDICT = re.compile(r"^(OK|FAILED)\b(.*)$", re.MULTILINE)
@@ -51,10 +52,8 @@ def render(label, text, sha=""):
 
 def _utf8_stdout():
     """Windows 上 stdout 默认 cp1252，写中文与 ✅ / ❌ 会 UnicodeEncodeError（#875 的第一次 CI 就栽在这）。"""
-    try:
+    with contextlib.suppress(AttributeError, ValueError):
         sys.stdout.reconfigure(encoding="utf-8")
-    except (AttributeError, ValueError):
-        pass
 
 
 def main(argv):

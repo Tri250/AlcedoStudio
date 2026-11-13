@@ -11,13 +11,11 @@
 草稿不是适配：入口路径来自探路读屏，未经人工逐步核对；自检只证明「进得去、关得掉、回读确认」。
 转正式机型脚本前必须人工在手机上核对，并补上 BUILD 录制版本。不要直接放进 recipes/。
 """
-import datetime, json, os, re, shlex, subprocess, sys
+import contextlib, datetime, json, os, re, shlex, subprocess, sys
 import xml.etree.ElementTree as ET
 for _st in (sys.stdout, sys.stderr):
-    try:
+    with contextlib.suppress(Exception):
         _st.reconfigure(encoding="utf-8", errors="replace")   # Windows 控制台默认不是 UTF-8
-    except Exception:
-        pass
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import entries
 import fast                                    # 只读 want_state / 驱动 Phone；不改引擎
@@ -45,7 +43,7 @@ def parse_tsv(path):
         if cols and cols[0] == "包名":
             continue                            # 表头
         cols += [""] * (len(TSV_COLS) - len(cols))
-        rows.append(dict(zip(TSV_COLS, cols[:len(TSV_COLS)])))
+        rows.append(dict(zip(TSV_COLS, cols[:len(TSV_COLS)], strict=False)))
     return rows
 
 

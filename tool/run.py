@@ -23,13 +23,11 @@
   python3 tool/run.py -s 序列号 dev-off --yes      从电脑上关闭开发者模式和 USB 调试（执行后电脑与手机断开）
   python3 tool/run.py -s 序列号 status-json        只读：一次输出全部状态（JSON，给图形界面用）
 """
-import glob, json, os, re, subprocess, sys, time
+import contextlib, glob, json, os, re, subprocess, sys, time
 from pathlib import Path
 for _st in (sys.stdout, sys.stderr):
-    try:
+    with contextlib.suppress(Exception):
         _st.reconfigure(encoding="utf-8", errors="replace")   # Windows 控制台默认不是 UTF-8
-    except Exception:
-        pass
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import adb_link
 import troubleshooting
@@ -683,7 +681,11 @@ def cmd_unsuspend(serial, rest):
     pk = rest
     if not pk:
         f = os.path.join(latest_backup(serial), "suspended.txt")
-        pk = sorted(set(open(f, encoding="utf-8").read().split())) if os.path.exists(f) else []
+        if os.path.exists(f):
+            with open(f, encoding="utf-8") as fh:
+                pk = sorted(set(fh.read().split()))
+        else:
+            pk = []
     failures = 0
     for p in pk:
         sh(serial, f"pm unsuspend --user 0 {p}")

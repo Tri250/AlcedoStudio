@@ -11,13 +11,11 @@
   fast.py -s SERIAL run 机型脚本.py         跑一个品牌机型脚本
 在脚本里：from fast import Phone
 """
-import os, re, shlex, sys, time, unicodedata, xml.etree.ElementTree as ET
+import contextlib, os, re, shlex, sys, time, unicodedata, xml.etree.ElementTree as ET
 from dataclasses import dataclass
 for _st in (sys.stdout, sys.stderr):
-    try:
+    with contextlib.suppress(Exception):
         _st.reconfigure(encoding="utf-8", errors="replace")   # Windows 控制台默认不是 UTF-8
-    except Exception:
-        pass
 import adbutils
 import uiautomator2 as u2
 from ui_session import connect
@@ -820,7 +818,7 @@ class Phone:
     def icon_candidates(self, area=(0.72, 0.0, 1.0, 0.16)):
         """没有文字、点了才知道去哪的图标（右上角齿轮、更多）：按位置从右往左给候选坐标。
         整块卡片/列表项点了会进别的页面，按尺寸排除掉。"""
-        x0, y0, x1, y1 = (v * s for v, s in zip(area, (self.W, self.H, self.W, self.H)))
+        x0, y0, x1, y1 = (v * s for v, s in zip(area, (self.W, self.H, self.W, self.H), strict=False))
         out = []
         for n in self.tree().iter("node"):
             if n.get("clickable") != "true":
@@ -1199,10 +1197,8 @@ class Phone:
         def clear():
             if not self.edit_ready():
                 return
-            try:
+            with contextlib.suppress(Exception):
                 self.reader.jsonrpc.clearTextField(selector, http_timeout=timeout)
-            except Exception:
-                pass
 
         # 直接对已确认的输入框发有超时的 RPC，不启动无法取消的后台线程。
         # 旧线程超时后仍会等控件出现，可能在下一页补打文字；也不能退回任意 focused 节点（键盘也有）。
