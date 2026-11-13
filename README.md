@@ -2,7 +2,7 @@
 
 帮助关闭安卓手机里有开关的系统广告、推荐内容、营销通知，以及支持的快应用跳转和广告组件。先检测、再选择，确认后执行，保留备份与还原入口。
 
-**1.1.0 · 1113v1** 已提供 Windows 安装版与便携版、Android arm64 签名版。下载只认本仓库 [Releases](https://github.com/Tri250/AlcedoStudio/releases)。
+**1.1.1 · 1113v2** 已提供 Windows 安装版与便携版、Android arm64 签名版。下载只认本仓库 [Releases](https://github.com/Tri250/AlcedoStudio/releases)。
 
 「超级 Ai.Clean」自动处理已适配的广告项，无需逐项选择。开始前备份，跳过未适配的机型脚本，保留服务通知和受保护组件。
 
