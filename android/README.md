@@ -27,6 +27,8 @@
 
 Jetpack Compose + 官方 Material 3 Expressive，代码在 `app/src/main/java/.../ui/`。页面状态只有 `AppModel.kt` 的 `Screen`，经 `Backend` 调 `aac_android.main.call()`：普通方法名落到 `Api`，`view.xxx` 落到 `aac_android/view.py`（界面要用的判断，CI 测得到）。首次设置的三步文案与「现在是第几步」也在 `view.py` 的 `setup_guide()`：页面和通知栏读同一份；切到系统设置时通知栏显示当前步，回到 App 时清单滚到当前步（#646）。
 
+执行期间的语音播报（更多选项里的「语音播报」开关，存 `settings.json`）：说哪句话由 `view.py` 的 `announcements()` 决定——开始、每进一项、暂停 / 继续、卡住、按结局收尾——Kotlin 侧 `Voice.kt` 只管用系统 TTS 说出来（主线程惰性初始化；设备没有 TTS 引擎就静默不播，不影响执行）。
+
 | 规范元素 | 用在哪 |
 |---|---|
 | `MaterialExpressiveTheme`、`MotionScheme.expressive()`、动态取色 | 全局；安卓 12 以下用 `expressiveLightColorScheme` |

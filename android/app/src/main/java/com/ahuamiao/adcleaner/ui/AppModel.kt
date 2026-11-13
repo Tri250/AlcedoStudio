@@ -1,6 +1,7 @@
 package com.ahuamiao.adcleaner.ui
 
 import com.ahuamiao.adcleaner.Native
+import com.ahuamiao.adcleaner.Voice
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -94,6 +96,12 @@ class AppModel(
         private set
     val log = mutableStateListOf<String>()
 
+    /** 语音播报开关；存 Python 侧 settings.json（gui/app.py 的 voice/set_voice），进程重启不丢。 */
+    var voiceOn by mutableStateOf(false)
+        private set
+    /** 上一次 poll 的原始结果，给 view.announcements 对比着用。 */
+    private var lastPoll: JSONObject? = null
+
     /** 还原进行中 / 刚还原完的结果，显示在还原面板里。 */
     var restoring by mutableStateOf(false)
         private set
@@ -145,6 +153,7 @@ class AppModel(
             }
             runCatching { loadSetup() }     // 三步文案取不到不该把整个 App 钉在失败页，refreshOnce 会再试
             launch { loadExtras() }
+            runCatching { voiceOn = backend.call("voice") == true }   // 读不到就按关着（演示后台没有这个方法）
             // 执行期间界面可能被系统回收：重新打开时后台的执行还在跑，接回执行页
             val run = runCatching { poll(0) }.getOrNull()
             if (run != null && run.running) { userRun = backend === engine; follow() } else refresh()
@@ -396,9 +405,11 @@ class AppModel(
         var next = 0
         var idle = 0
         var errs = 0
+        lastPoll = null
         while (isActive) {
             val run = try {
-                poll(next)
+                val raw = backend.call("view.poll", next) as JSONObject
+                RunProgress.parse(raw).also { announce(lastPoll, raw, it); lastPoll = raw }
             } catch (_: EngineError) {
                 // 引擎连续一分半答不上来（多半已被系统杀掉）：别让执行页永远转圈
                 if (++errs > 90) {
@@ -473,6 +484,23 @@ class AppModel(
 
     fun togglePause() = scope.launch {
         runCatching { backend.call(if (progress.pause) "resume" else "pause") }
+    }
+
+    /** 语音播报开关（更多选项面板）。先改界面再落盘；写失败不回头，下次启动读不到就按关。 */
+    fun setVoice(on: Boolean) {
+        voiceOn = on
+        if (on) Voice.warmup()
+        scope.launch { runCatching { backend.call("set_voice", on) } }
+    }
+
+    /** 语音播报：说哪句由 view.py 的 announcements 给，这里只管说出来；播报出错不影响执行。 */
+    private fun announce(prev: JSONObject?, raw: JSONObject, run: RunProgress) {
+        if (!voiceOn) return
+        runCatching {
+            (backend.call("view.announcements", prev ?: JSONObject.NULL, raw) as? JSONArray)
+                ?.strings()
+                ?.forEach { Voice.speak(it, flush = !run.finished) }
+        }
     }
 
     fun stopRun() = scope.launch { runCatching { backend.call("stop") } }

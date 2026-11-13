@@ -1233,6 +1233,15 @@ class Api:
             return {"version": latest.lstrip("v"), "url": DOWNLOAD_PAGE} if version_key(latest) > current else {}
         return {}
 
+    def voice(self):
+        """手机版「语音播报」开关（settings.json 里的 voice，默认关）。桌面界面没有这个开关。"""
+        return bool(self.setting("voice", False))
+
+    def set_voice(self, on):
+        """写开关；value 一律存布尔。"""
+        self.put_setting("voice", bool(on))
+        return bool(on)
+
     def _run(self, script, *args, timeout=180):
         return self.runner.run(script, *args, timeout=timeout)
 

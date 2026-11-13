@@ -301,5 +301,45 @@ def send_feedback(api, kind, text, diag):
     return {"trimmed": bool(clip)}
 
 
+def _speak_result(run):
+    """结束那句：结局，跟上每步一句话（没做的和只存快照的不说）。"""
+    if (run.get("outcome") or "ok") == "stopped":
+        return "已停止清理"
+    if run.get("outcome") == "failed":
+        return "清理没做完，有步骤没成功，请回来看看结果"
+    parts = [f"{r.get('title')}，{r.get('summary')}" for r in (run.get("results") or [])
+             if not r.get("skipped") and r.get("summary") and r.get("summary") != "已保存"]
+    body = "；".join(parts[:4])
+    return f"清理完成{'：' + body if body else ''}"
+
+
+def announcements(api, prev, cur):
+    """两次进度之间该说的话（手机版语音播报，句子怎么定在 Python 里，CI 测得到）。
+    prev 是上次 poll 的结果；None 表示刚开始跟（首次执行，或进程被收掉后接回半路的执行）。"""
+    if not cur:
+        return []
+    if not cur.get("running"):
+        return [_speak_result(cur)] if cur.get("results") or cur.get("cancel") else []
+    was = prev or {}
+    out = []
+    if not was.get("running"):
+        idx = cur.get("idx") or 0
+        title = (cur.get("title") or "").strip()
+        if idx > 1:                     # 接回半路的执行：不是从头开始
+            out.append(f"继续清理，第 {idx} 项，{title}" if title else f"继续清理，第 {idx} 项")
+        else:
+            total = cur.get("total") or 0
+            out.append(f"开始清理，共 {total} 项" if total else "开始清理")
+        return out
+    if cur.get("paused") != was.get("paused"):
+        out.append("已暂停" if cur.get("paused") else "继续清理")
+    if not cur.get("paused") and cur.get("idx") != was.get("idx"):
+        title = (cur.get("title") or "").strip()
+        out.append(f"第 {cur.get('idx')} 项，{title}" if title else f"第 {cur.get('idx')} 项")
+    if cur.get("stalled") and not was.get("stalled"):
+        out.append("清理好像停住了，请回来看看")
+    return out
+
+
 EXPORTS = {"poll": poll, "detect": detect, "brand_guide": brand_guide, "setup_guide": setup_guide,
-           "send_feedback": send_feedback}
+           "send_feedback": send_feedback, "announcements": announcements}

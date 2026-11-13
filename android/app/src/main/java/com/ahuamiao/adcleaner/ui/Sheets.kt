@@ -110,7 +110,7 @@ private fun SheetTitle(text: String) {
 @Composable
 private fun MoreSheet(model: AppModel) {
     val newer = model.newVersion
-    val rows = if (newer != null) 6 else 5
+    val rows = if (newer != null) 7 else 6
     val colors = MaterialTheme.colorScheme
     var i = 0
     SheetBody {
@@ -138,6 +138,13 @@ private fun MoreSheet(model: AppModel) {
                 colors = cardRowColors(),
                 leadingContent = { IconTile(R.drawable.ic_history, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
             ) { Text("还原改动") }
+            SegmentedListItem(
+                onClick = { model.setVoice(!model.voiceOn) },
+                shapes = ListItemDefaults.segmentedShapes(i++, rows),
+                colors = cardRowColors(),
+                leadingContent = { IconTile(R.drawable.ic_volume_up, container = colors.surfaceContainerHigh, content = colors.onSurfaceVariant) },
+                trailingContent = { Switch(model.voiceOn, onCheckedChange = null) },
+            ) { Text("语音播报") }
             SegmentedListItem(
                 onClick = { model.openFeedback() },
                 shapes = ListItemDefaults.segmentedShapes(i++, rows),
