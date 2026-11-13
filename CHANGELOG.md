@@ -89,6 +89,7 @@
 - 引擎 tool/ 全量自检：修复 21 处静态问题（异常链、zip strict、contextlib、文件句柄），1994 项回归全绿。
 - 引擎 tool/ 自检补测：新增 24 项 fast.py 单步命令回归（ls / tap / off / scan / only / run / check、参数解析与错误出口，此前无直接覆盖），tool/ 覆盖率 90% → 92%，2018 项回归全绿。
 - 手机版 android/ 全量自检：Python 层修复 3 处静态问题（main.py 收尾保护、u2 警告 stacklevel、zip strict），构建、JVM 单测与 1994 项回归全绿。
+- 手机版 android/ 自检补测：新增 34 项回归——main.py 调度层 17 项（call() 分发与错误信封、Session 计数与失败回滚 #662/#746、结束通知三结局、Java 缺失回退）与 AdbBridge 电脑调试通道 17 项（ready/exec/daemon/dump/size/选路），aac_android 覆盖率 79% → 83%，2052 项回归全绿；Kotlin 层二轮审计硬规则全部在位。
 
 ## 1.0.9 · 1109v7
 
