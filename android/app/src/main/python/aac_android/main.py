@@ -3,7 +3,7 @@
 boot() 由 AacApp 在后台线程调用一次；之后界面的每次调用都落到 call()：普通方法名是 Api 上的方法，
 `view.xxx` 是 view.py 里给界面准备好的判断。
 """
-import json
+import contextlib, json
 import os
 import sys
 import threading
@@ -78,15 +78,11 @@ class Session:
                 self.count -= 1
                 self.background = False
                 # 拆屏要碰通道，断线时它自己会抛：保活与屏幕锁仍要撤（#746）
-                try:
+                with contextlib.suppress(Exception):
                     visible(package, False)
                     screen.release()
-                except Exception:
-                    pass
-                try:
+                with contextlib.suppress(Exception):
                     native.busy(False, False)
-                except Exception:
-                    pass
                 raise
             return self.background
 
