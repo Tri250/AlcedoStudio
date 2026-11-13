@@ -1,0 +1,25 @@
+{
+    "assets": {
+        "requirements-arm64-v8a.imy": "b04f3ee8f5e43fa3b162981b50bb72fe1acabb33",
+        "bootstrap-native/arm64-v8a/_bz2.cpython-312.so": "c2591968db007c1ced4eafcdb3c4c8dfb8e548be",
+        "bootstrap-native/arm64-v8a/java/chaquopy.so": "3b4d4db5a208bbabe930d232c14012735f3311c7",
+        "bootstrap.imy": "114bf973cdbf003e12593b47c58133a84cf43222",
+        "bootstrap-native/arm64-v8a/_sha2.cpython-312.so": "c90a3974ba450be69f5873643068b46546b73a19",
+        "bootstrap-native/arm64-v8a/_struct.cpython-312.so": "234d6510a93b667048dbffc82de55e430a3c3425",
+        "bootstrap-native/arm64-v8a/mmap.cpython-312.so": "c266f8250ab09abe402f05ff8ff7d983632ff063",
+        "cacert.pem": "0e0b08203b8321b03e3eb73b3132a2af3796b026",
+        "bootstrap-native/arm64-v8a/math.cpython-312.so": "80d17aa453f60957067df578f8b68c7ff2e2fe42",
+        "bootstrap-native/arm64-v8a/_ctypes.cpython-312.so": "3198537f8200adcb36fad56761ba46265cfb5e98",
+        "bootstrap-native/arm64-v8a/_datetime.cpython-312.so": "cd156750b0a154218c33eaaddc6d6d137962c314",
+        "app.imy": "a1eafcc76163f9cbe64ef17e8d4b4cd5a2af2b56",
+        "stdlib-common.imy": "fd080b3edb198e21c082b9879f8d9efa3652880b",
+        "bootstrap-native/arm64-v8a/_lzma.cpython-312.so": "b92556507023a23336e146610082f6e3cfd46a7c",
+        "bootstrap-native/arm64-v8a/binascii.cpython-312.so": "e3b915632c36edff152d96b367e519e36741e9b2",
+        "stdlib-arm64-v8a.imy": "3e7fcecc771db2ee830cfb45965cabea73f074d0",
+        "bootstrap-native/arm64-v8a/_random.cpython-312.so": "4d7bd41ebbca2cf99c150d1ceb7e92d18477dbb1",
+        "requirements-common.imy": "5efbdb69ddab4f2f875750ac29857b6c052a0204",
+        "bootstrap-native/arm64-v8a/zlib.cpython-312.so": "64853f96f6ec2180bdf182437d242a09947ceed4"
+    },
+    "extract_packages": [],
+    "python_version": "3.12"
+}

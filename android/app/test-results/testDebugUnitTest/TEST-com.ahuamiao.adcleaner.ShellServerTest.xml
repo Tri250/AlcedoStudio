@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ahuamiao.adcleaner.ShellServerTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-11-13T13:44:33.432Z" hostname="all-in-one-94-8vvcx" time="4.471">
+  <properties/>
+  <testcase name="a_reader_failure_comes_back_with_the_servers_own_words" classname="com.ahuamiao.adcleaner.ShellServerTest" time="0.009"/>
+  <testcase name="stdin_reaches_the_command" classname="com.ahuamiao.adcleaner.ShellServerTest" time="0.049"/>
+  <testcase name="concurrent_commands_reply_under_their_own_id" classname="com.ahuamiao.adcleaner.ShellServerTest" time="0.129"/>
+  <testcase name="dump_and_size_are_served_by_the_reader" classname="com.ahuamiao.adcleaner.ShellServerTest" time="0.003"/>
+  <testcase name="cancelling_one_id_does_not_eat_another_reply" classname="com.ahuamiao.adcleaner.ShellServerTest" time="0.001"/>
+  <testcase name="cancel_kills_the_command_and_sends_no_reply" classname="com.ahuamiao.adcleaner.ShellServerTest" time="3.819"/>
+  <testcase name="stdout_and_stderr_stay_apart_and_the_exit_code_comes_back" classname="com.ahuamiao.adcleaner.ShellServerTest" time="0.014"/>
+  <testcase name="cancel_does_not_touch_a_daemon" classname="com.ahuamiao.adcleaner.ShellServerTest" time="0.429"/>
+  <testcase name="without_a_reader_the_command_channel_still_works" classname="com.ahuamiao.adcleaner.ShellServerTest" time="0.013"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
