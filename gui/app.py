@@ -5,7 +5,7 @@
 后台：tool/run.py、tool/fast.py、tool/chan_fast.py，以子进程运行，日志实时回传界面。
 打包后没有独立的 Python，子进程用「本程序 --cli 脚本名 参数…」的方式启动。
 """
-import hashlib, importlib, json, os, platform, re, runpy, subprocess, sys, threading, time, urllib.error, urllib.request, uuid, zipfile
+import contextlib, hashlib, importlib, json, os, platform, re, runpy, subprocess, sys, threading, time, urllib.error, urllib.request, uuid, zipfile
 from pathlib import Path
 
 try:                                # 当包导入（测试）；直接跑脚本、打包时它是顶层模块
@@ -95,10 +95,8 @@ class ClientData:
         else:
             data[key] = value
         if not data:                      # 一项设置都不剩就别留个空文件：「没设置过」就是文件不存在
-            try:
+            with contextlib.suppress(OSError):
                 os.remove(self.settings)
-            except OSError:
-                pass
             return
         self.ensure()
         tmp = self.settings + ".tmp"
@@ -123,10 +121,8 @@ def _fix_stdio():
             except OSError:
                 setattr(sys, name, open(os.devnull, "w", encoding="utf-8"))
     for st in (sys.stdout, sys.stderr):        # Windows 控制台默认 cp1252/GBK，中文和 ✗ ▶ 会报错；打包后 PYTHONIOENCODING 不生效
-        try:
+        with contextlib.suppress(Exception):
             st.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
 
 
 def cli_main():
@@ -250,10 +246,8 @@ def chime():
         return                          # AAC_NO_SOUND：回归测试不出声
     _last_chime[0] = now
     path = os.path.join(BASE, "gui", "web", "chime.wav")
-    try:
+    with contextlib.suppress(Exception):
         play_sound(path)
-    except Exception:
-        pass
 
 
 def child_env(adb, backups):
@@ -776,10 +770,8 @@ class AdbDownloader:
             self.dl = {"state": "done", "pct": 100, "msg": "adb 已就绪"}
         except Exception as e:
             self.dl = {"state": "error", "pct": 0, "msg": f"下载失败：{e}"}
-            try:
+            with contextlib.suppress(OSError):
                 os.remove(zp)
-            except OSError:
-                pass
 
     def download_state(self):
         return self.dl
@@ -1112,10 +1104,8 @@ class Dispatcher:
     def resume(self):
         if self.job:
             self.job.clear_pause()
-        try:
+        with contextlib.suppress(OSError):
             os.remove(self.data.pause)
-        except OSError:
-            pass
         return True
 
 

@@ -97,7 +97,7 @@ def legacy(ver, out, sums_path):
                 "\n\n不知道 Mac 是哪种芯片：点屏幕左上角的苹果图标 → 关于本机，\n"
                 "「芯片」一栏写 Apple M 开头的选 Mac-Apple芯片，写 Intel 的选 Mac-Intel芯片。\n\n"
                 "每个文件夹里有安装包和这个版本的安装说明。旧版本在官网和 GitHub 的「全部版本」里。\n")
-    for key, folder, title, sub, file, note in items:
+    for key, folder, title, sub, file, _note in items:
         kind = kind_of(key)
         digest = sums.get(file)
         if not digest:
